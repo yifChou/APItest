@@ -1,0 +1,68 @@
+username = "C88888"
+password = "NMt9f54gz9M="
+urls = {
+    #客户下单url
+    "orderurl" : "http://120.76.102.19:8034/LMS.API/api/WayBill/BatchAdd",
+}
+#客户下单数据
+data = [
+{
+"WayBillNumber":"",
+"TrackingNumber":"",
+"OrderNumber":"test20190109000002",
+"TransactionNumber":"123456789",
+"ShippingMethodCode":"ITZX",
+"Weight":10,
+"TotalFee":None,
+"TotalQty":None,
+"SettleWeight":None,
+"PackageVolume":1,
+"PackageNumber":1,
+"Length":1,
+"Height":1,
+"SourceCode":"API",
+"ShippingInfo":{
+"ShippingTaxId":"cn",
+"CountryCode":"IT",
+"ShippingFirstName":"xing",
+"ShippingLastName":"ming",
+"ShippingCompany":"company",
+"ShippingAddress":"adress",
+"ShippingAddress1":"adress1",
+"ShippingAddress2":"adress2",
+"ShippingCity":"city",
+"ShippingState":"guangdong",
+"ShippingZip":"123456",
+"ShippingPhone":"12345678456"
+},
+"SenderInfo":{
+"CountryCode":"CN",
+"SenderFirstName":"xing",
+"SenderLastName":"ming",
+"SenderCompany":"company",
+"SenderAddress":"adress",
+"SenderCity":"city",
+"SenderState":"guangdong",
+"SenderZip":"123456",
+"SenderPhone":"12345678456"
+},
+"IsReturn":True,
+"ApplicationType":1,
+"InsuranceType":1,
+"InsureAmount":1000,
+"SensitiveTypeID":1,
+"ApplicationInfos":[
+{
+"ApplicationName":"摩托车护目镜",
+"HSCode":"xx22",
+"Qty":1,
+"UnitPrice":10,
+"UnitWeight":1,
+"PickingName":"test",
+"Remark":"test",
+"Sku":"xx22",
+"CurrencyCode":"USD"
+}
+]
+}
+]
