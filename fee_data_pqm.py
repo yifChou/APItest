@@ -42,7 +42,39 @@ def excute_sql(db,conn,sql):
     except Exception as e:
         conn.rollback()
         print(e)
-def fee_to_pqm(lading_number,Volume_Weight,Charge_Weight):
+def fee_to_air_diaobo(lading_number,Server_Code,source,Charge_Weight,Currency,bs_time):
+    request_data = {
+  "airChargeResultValues": [
+    {
+      "air_Price_Value": 1.0,
+      "air_Price_TotalValue": 2.0,
+      "fk_code": "A4",
+      "unit_Code": "KG",
+      "getPrice_Type": "1",
+      "currency": Currency
+    }
+  ],
+  "price_number": 1,
+  "waybill_Code": lading_number,
+  "airService_type": "2",
+  "volume_Weight": 4.0,
+  "charge_Weight": Charge_Weight,
+  "lading_Weight": 6.0,
+  "server_Code": Server_Code,
+  "source_id": source,
+  "Current_date":bs_time
+}
+    print(request_data)
+    request_url = url.fms + "/api/AirFee/CreateAirFee"
+    print(request_url)
+    data = requests.post(url=request_url, json=request_data).text
+    print(data)
+    if '"Code":0' in data:
+        print("调拨空运费用推送pqm成功！！！", request_data)
+        # return request_data["shipper_hawbcode"]
+    else:
+        print("调拨空运费用推送pqm失败", request_url, data, request_data)
+def fee_to_pqm(lading_number,Volume_Weight,Charge_Weight,AirService_type ):
     try:
         dts_db, dts_conn = connect_it_100(database_name="pqm_db")
         sql = "select * from cost_charged_json limit 1"
@@ -80,12 +112,59 @@ def fee_to_pqm(lading_number,Volume_Weight,Charge_Weight):
         volume = random.randint(1000, 9999)
         fee_sql = "INSERT INTO `pqm_db`.`cost_charged_json`( `waybill_code`, `jsonstring`, `opt_state`, `create_time`, `error_count`, `error_message`, `system_source`, `md5`, `cost_type`) " \
                   "VALUES ('%s', '{\"Waybill_Code\":\"%s\",\"Volume_Weight\":%s,\"Charge_Weight\":%s,\"PV_Weight\":0.0,\"PV_Plate\":\"H1\",\"Tune_Weight\":null,\"AirServer_Code\":null,\"Server_Code\":\"%s\",\"Airline_Two_Code\":\"%s\",\"Airport_Code_Start\":\"%s\",\"Airport_Code_End\":\"%s\",\"Rule_Type\":\"ZB\",\"Server_Type\":\"%s\",\"Quo_Type\":\"%s\",\"Status\":null,\"Current_date\":\"2020-10-06T00:00:00\",\"System_Code\":\"YT\",\"OrgShortCode\":\"YT-SZ\",\"Unit_Code\":null,\"Ticket\":300,\"Box_Number\":20}', 'D', '2020-11-06 15:40:07', NULL, '', 'YT', '%s', " \
-                  "'KY');" % (
+                  "'%s');" % (
                   lading_number, lading_number, Volume_Weight, Charge_Weight, data[0], data[1], data[2], data[3], data[4], data[5],
-                  lading_number)
+                  lading_number,AirService_type)
         print(fee_sql)
         excute_sql(dts_db, dts_conn, fee_sql)
         print("空运提单费用插入PQM成功")
+    except Exception as e:
+        print(e)
+def fee_to_diaobo_air(lading_number, Volume_Weight, Charge_Weight):
+    try:
+        dts_db, dts_conn = connect_it_100(database_name="pqm_db")
+        sql = "select * from cost_charged_json limit 1"
+        #     price = ["YT004-RH-ORD-PVG-FWZF-GDZF ",
+        # "YT012-OZ-ORD-TAO-CS2-Q1",
+        # "YT012-OZ-ORD-TAO-CS2-Q1",
+        # "YT012-OZ-ORD-TAO-CS2-Q1",
+        # "YT012-OZ-ORD-TAO-CS2-Q1",
+        # "YT001-00-PEK-MFM-FWF-Q1",
+        # "YT001-QR-PEK-MFM-FWF-Q1",
+        # "YT002-CZ-CGO-KIX-FWZF-GDZF ",
+        # "YT001-BR-PEK-MFM-QW01-Y002 ",
+        # "YT008-GA-ORD-SYD-FWF-XIAOXIE ",
+        # "YT008-GA-ORD-SYD-FWF-XIAOXIE ",
+        # "YT001-OZ-ORD-BLQ-FW01-Y001 ",
+        # "YT001-OZ-ORD-BLQ-FW01-Y001 ",
+        # "YT001-OZ-ORD-BLQ-FW01-Y001 ",
+        # "YT024-MH-PEK-BRU-QW01-Y001 ",
+        # "YT024-MH-PEK-BRU-QW01-Y001 ",
+        # "YT008-KL-ORD-SYD-FW01-Y001 ",
+        # "YT008-KL-ORD-SYD-FW01-Y001 ",
+        # "YT008-KL-ORD-SYD-FW01-Y001 ",
+        # "YT024-MH-PEK-BRU-FWF-GDZF",
+        # "YT024-MH-PEK-BRU-FWF-GDZF",
+        # "YT024-CA-PEK-BRU-FWZF-GDF",
+        # "CSSJ-BR-ZAZ-BCN-FWZF-FDF ",
+        # "CSSJ-UA-PEK-CGO-FWF-GDZF ",
+        # "CSSJ-UA-PEK-CGO-FWF-GDZF ",
+        # "YT024-TA-PEK-BRU-CS2-CS343 ",
+        # "YT008-PO-CAN-ORD-FWZF-FDF",
+        # "YT008-PO-CAN-ORD-FWZF-FDF"]
+        price = "yif-CX-HKG-AMS-DB2-DB"  # 报价系统的报价成本
+        data = price.split("-")
+        weight = random.randint(1000, 9999)
+        volume = random.randint(1000, 9999)
+        fee_sql = "INSERT INTO `pqm_db`.`cost_charged_json`( `waybill_code`, `jsonstring`, `opt_state`, `create_time`, `error_count`, `error_message`, `system_source`, `md5`, `cost_type`, `db_type`) " \
+                  "VALUES ('%s', '{\"Waybill_Code\":\"%s\",\"Volume_Weight\":%s,\"Charge_Weight\":%s,\"PV_Weight\":0.0,\"PV_Plate\":\"H1\",\"Tune_Weight\":null,\"AirServer_Code\":null,\"Server_Code\":\"%s\",\"Airline_Two_Code\":\"%s\",\"Airport_Code_Start\":\"%s\",\"Airport_Code_End\":\"%s\",\"Rule_Type\":\"ZB\",\"Server_Type\":\"%s\",\"Quo_Type\":\"%s\",\"Status\":null,\"Current_date\":\"2020-10-06T00:00:00\",\"System_Code\":\"YT\",\"OrgShortCode\":\"YT-SZ\",\"Unit_Code\":null,\"Ticket\":300,\"Box_Number\":20}', 'D', '2020-11-06 15:40:07', NULL, '', 'YT', '%s', " \
+                  "'DB', 'DB-KY');" % (
+                      lading_number, lading_number, Volume_Weight, Charge_Weight, data[0], data[1], data[2], data[3],
+                      data[4], data[5],
+                      lading_number)
+        print(fee_sql)
+        excute_sql(dts_db, dts_conn, fee_sql)
+        print("空运调拨费用插入PQM成功")
     except Exception as e:
         print(e)
 def fee_to_paisong(Waybill_Code,Server_Code,ServerPlace_Code,B_time):
@@ -213,7 +292,7 @@ def fee_to_qingguan(Waybill_Code,Server_Code,ServerPlace_Code,source,Charge_Weig
         # return request_data["shipper_hawbcode"]
     else:
         print("清关费用推送pqm失败", request_url, data, request_data)
-def fee_to_diaobo(transport_hawbcode,db_time):
+def fee_to_diaobo(transport_hawbcode,charge_type_code,db_time):
     # if source==1:
     #     source="YT"
     # else:
@@ -238,14 +317,24 @@ def fee_to_diaobo(transport_hawbcode,db_time):
     "first_billing_location_code":"YT-XM",
     "dest_country_code":"AF",
     "kc_count":"1",
-    "airline_company_code":"",
-    "take_off_code":"",
-    "take_ground_code":"",
-    "service_type_code":"DB",
-    "fare_type_code":"GDZF",
+    "airline_company_code":"CX",
+    "take_off_code":"HKG",
+    "take_ground_code":"AMS",
+    "service_type_code":"DB2",
+    "fare_type_code":"DB",
     "charge_type_code":"",
     "transport_receive_time":db_time
 }
+    if charge_type_code=="KC":
+        request_data["charge_type_code"]=""
+        request_data["transport_code"]="ZY"
+    elif charge_type_code=="AN":
+        request_data["charge_type_code"] = "KY"
+        request_data["transport_code"] = ""
+    elif charge_type_code=="WL":
+        request_data["settlement_code"] = "WL"
+        request_data["orig_warehouse_code"]= "YT-GZ"
+        request_data["dest_warehouse_code"] = "YT-XM"
     print(request_data)
     request_url = url.pqm_url + "api/CostChargedJson/PulshAirTransferChargeJson"
     print(request_url)
@@ -352,4 +441,5 @@ if  __name__ =="__main__":
     Currency="RMB"
     #fee_to_zhuanyun(Waybill_Code, Server_Code, source, Charge_Weight, Start_Place, end_Place, BusinessTime)
     #fee_to_qingguan(Waybill_Code, Server_Code, source, Charge_Weight, Customs_Clearance_Port, Currency, BusinessTime)
-    fee_to_paisong(Waybill_Code="YT9603847896421", Server_Code="BJYWW", ServerPlace_Code="TEST008")
+    #fee_to_paisong(Waybill_Code="YT9603847896421", Server_Code="BJYWW", ServerPlace_Code="TEST008")
+    fee_to_diaobo_air(lading_number="100-20201030", Volume_Weight=3.33, Charge_Weight=4.44)

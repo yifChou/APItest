@@ -1,4 +1,17 @@
 import random
+import itertools
+data10 = '1234567890'
+result = itertools.combinations(data10, 5)
+for i in result:
+    #print(i,type(i))
+    data10 = map(list,data10)
+    for i in data10:
+        print(i)
+    #print(data10)
+
+
+
+
 def test():
     with open("线上运单_157-26368731.txt","r") as f:
         data = f.readlines()
@@ -54,11 +67,11 @@ if __name__=="__main__":
     #     print(json_data_1)
     # else:
     #     print("运单推送PQM计费表失败:", data, request_pqm_url_1, json_data_1)
-    serverchannelcode_dict = {
-        #"TEST008":[],
-        "yif":["TEST007","SHQ"],#"GZYJ","SPLUSZ"
-        "AB123":["TEST007","SHQ"]#"HERMES","ABCZ"
-    }
-    a,b=serverchannelcode_dict["yif"]
-    Customs_Clearance_Port, Currency = ["AMS", "RMB"]
-    print(a,b,Customs_Clearance_Port, Currency)
+    # serverchannelcode_dict = {
+    #     #"TEST008":[],
+    #     "yif":["TEST007","SHQ"],#"GZYJ","SPLUSZ"
+    #     "AB123":["TEST007","SHQ"]#"HERMES","ABCZ"
+    # }
+    # a,b=serverchannelcode_dict["yif"]
+    # Customs_Clearance_Port, Currency = ["AMS", "RMB"]
+    # print(a,b,Customs_Clearance_Port, Currency)
