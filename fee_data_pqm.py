@@ -31,6 +31,20 @@ def connect_it_100(database_name):
         return cursor,conn
     except Exception as e:
         print(e)
+def connect_bms(database_name):
+    try:
+        conn = pymysql.connect(
+            host = "10.168.95.227",
+            port = 3306,
+            user="bms_admin",
+            password="sZ5VIfyCl!MsdfeW1D",
+            database=database_name,
+            charset="utf8")
+        print(conn)
+        cursor = conn.cursor()
+        return cursor,conn
+    except Exception as e:
+        print(e)
 
 
 
@@ -169,17 +183,30 @@ def fee_to_diaobo_air(lading_number, Volume_Weight, Charge_Weight):
         print(e)
 def fee_to_paisong(Waybill_Code,Server_Code,ServerPlace_Code,B_time):
     try:
-        dts_db, dts_conn = connect_it_100(database_name="pqm_db")
-        sql = "select * from cost_charged_json limit 1"
-        weight = random.randint(1000, 9999)
-        volume = random.randint(1000, 9999)
-        fee_sql = "INSERT INTO `pqm_db`.`bil_jsoncharged_cost`(`waybill_code`, `jsonstring`, `opt_state`, `create_time`, `error_count`, `error_message`, `system_source`, `md5`) " \
-              "VALUES ('%s', '{\"Waybill_Code\":\"%s\",\"Currency_Code\":\"YD\",\"Customer_Code\":\"\",\"Product_Code\":\"\",\"Server_Code\":\"%s\",\"Server_Type\":\"PS\",\"ServerPlace_Code\":\"%s\",\"System_Code\":\"YT\",\"Og_id_ChargeFirst\":\"YT-SZ\",\"Og_id_ChargeSecond\":\"\",\"Arrival_Date\":\"2020-10-28T09:18:16\",\"Country\":\"AR\",\"Postcode\":\"518000\",\"City\":\"005001\",\"Province\":\"005\",\"Charge_Weight\":1.852,\"Unit_Code\":\"KG\",\"Unit_Length\":\"CM\",\"Unit_Area\":null,\"Unit_Bulk\":null,\"Unit_Volume\":null,\"Pieces\":5,\"Category_Code\":\"5\",\"Declared_Value\":0.8,\"Currency\":\"RMB\",\"Tariff\":\"0.6\",\"Airline\":\"中国南方\",\"Departure_Airport\":\"宝安机场\",\"Destination_Airport\":\"伦敦机场\",\"Customs_Clearance_Port\":\"QHKA\",\"Start_Place\":\"MD\",\"end_Place\":\"MX\",\"Remark\":null,\"Ticket\":5,\"HS_Code\":5,\"Box_Number\":5,\"First_Long\":0.0,\"Two_Long\":0.0,\"Three_Long\":0.0,\"BusinessTime\":\"2020-03-11T00:00:00\",\"airline_two_code\":\"BR\",\"detailEntities\":null,\"Goods_Code\":null,\"Extra_ServicesList\":[{\"ExtraService\":\"rt\",\"ExtraService_Coefficient\":0.8},{\"ExtraService\":\"py\",\"ExtraService_Coefficient\":0.7},{\"ExtraService\":\"aa\",\"ExtraService_Coefficient\":0.6}],\"IsFinalCharge\":false,\"ChargType\":null,\"HCustomsNumber\":0.0,\"MCustomsNumber\":0.0,\"LCustomsNumber\":0.0,\"HCargoValueNumber\":0.0,\"MCargoValueNumber\":0.0,\"LCargoValueNumber\":0.0,\"Charge_Volume\":5.0,\"Truck_Number\":1,\"Tray_Number\":1,\"TimeUnti\":\"Day\",\"TimeVaule\":5,\"TrackingNumber\":\"33P\",\"StartCountry\":\"IT\",\"EndCountry\":\"DE\",\"HAWB_Number\":3,\"Start_TransferPoint\":\"MD\",\"End_TransferPoint\":\"MX\"}', 'D', '%s', 0, '', 'YT'," \
-              " '%s')"% (
-            Waybill_Code, Waybill_Code, Server_Code,ServerPlace_Code,B_time, Waybill_Code)
-        print(fee_sql)
-        excute_sql(dts_db, dts_conn, fee_sql)
+        dts_db, dts_conn = connect_bms(database_name="bms_db")
+        # sql = "select * from cost_charged_json limit 1"
+        # weight = random.randint(1000, 9999)
+        # volume = random.randint(1000, 9999)
+        # fee_sql = "INSERT INTO `pqm_db`.`bil_jsoncharged_cost`(`waybill_code`, `jsonstring`, `opt_state`, `create_time`, `error_count`, `error_message`, `system_source`, `md5`) " \
+        #       "VALUES ('%s', '{\"Waybill_Code\":\"%s\",\"Currency_Code\":\"YD\",\"Customer_Code\":\"\",\"Product_Code\":\"\",\"Server_Code\":\"%s\",\"Server_Type\":\"PS\",\"ServerPlace_Code\":\"%s\",\"System_Code\":\"YT\",\"Og_id_ChargeFirst\":\"YT-SZ\",\"Og_id_ChargeSecond\":\"\",\"Arrival_Date\":\"2020-10-28T09:18:16\",\"Country\":\"AR\",\"Postcode\":\"518000\",\"City\":\"005001\",\"Province\":\"005\",\"Charge_Weight\":1.852,\"Unit_Code\":\"KG\",\"Unit_Length\":\"CM\",\"Unit_Area\":null,\"Unit_Bulk\":null,\"Unit_Volume\":null,\"Pieces\":5,\"Category_Code\":\"5\",\"Declared_Value\":0.8,\"Currency\":\"RMB\",\"Tariff\":\"0.6\",\"Airline\":\"中国南方\",\"Departure_Airport\":\"宝安机场\",\"Destination_Airport\":\"伦敦机场\",\"Customs_Clearance_Port\":\"QHKA\",\"Start_Place\":\"MD\",\"end_Place\":\"MX\",\"Remark\":null,\"Ticket\":5,\"HS_Code\":5,\"Box_Number\":5,\"First_Long\":0.0,\"Two_Long\":0.0,\"Three_Long\":0.0,\"BusinessTime\":\"2020-03-11T00:00:00\",\"airline_two_code\":\"BR\",\"detailEntities\":null,\"Goods_Code\":null,\"Extra_ServicesList\":[{\"ExtraService\":\"rt\",\"ExtraService_Coefficient\":0.8},{\"ExtraService\":\"py\",\"ExtraService_Coefficient\":0.7},{\"ExtraService\":\"aa\",\"ExtraService_Coefficient\":0.6}],\"IsFinalCharge\":false,\"ChargType\":null,\"HCustomsNumber\":0.0,\"MCustomsNumber\":0.0,\"LCustomsNumber\":0.0,\"HCargoValueNumber\":0.0,\"MCargoValueNumber\":0.0,\"LCargoValueNumber\":0.0,\"Charge_Volume\":5.0,\"Truck_Number\":1,\"Tray_Number\":1,\"TimeUnti\":\"Day\",\"TimeVaule\":5,\"TrackingNumber\":\"33P\",\"StartCountry\":\"IT\",\"EndCountry\":\"DE\",\"HAWB_Number\":3,\"Start_TransferPoint\":\"MD\",\"End_TransferPoint\":\"MX\"}', 'D', '%s', 0, '', 'YT'," \
+        #       " '%s')"% (Waybill_Code, Waybill_Code, Server_Code,ServerPlace_Code,B_time, Waybill_Code)
+        # print(fee_sql)
+        # excute_sql(dts_db, dts_conn, fee_sql)
+        # print("派送费用插入PQM成功")
+
+        sql = "INSERT INTO `bms_db`.`jsn_cost_deliver`(`waybill_code`, `server_code`, `settlement_code`, `arrival_date`, `org_short_code`, `country`, `postcode`, `charge_weight`, `weight_unit`, `opt_state`, `create_time`, `error_count`, `error_message`, `system_source`, `md5`) VALUES " \
+              "('%s', '%s', '', NOW(), NULL, NULL, NULL, NULL, NULL, 'D', NOW(), 0, '', 'YT', '');"% (Waybill_Code, Server_Code)
+        print(sql)
+        excute_sql(dts_db, dts_conn, sql)
+        select_sql = "select id from jsn_cost_deliver where waybill_code='%s';"%(Waybill_Code)
+        excute_sql(dts_db, dts_conn, select_sql)
+        id =dts_db.fetchall()[0][0]
+        insert_sql = "INSERT INTO `bms_db`.`jsn_cost_deliver_json`(`id`, `waybill_code`, `jsonstring`) VALUES ( %s, '%s'," \
+                     " '{\"Waybill_Code\":\"%s\",\"Currency_Code\":\"YD\",\"Customer_Code\":\"\",\"Product_Code\":\"\",\"Server_Code\":\"%s\",\"Server_Type\":\"PS\",\"ServerPlace_Code\":\"%s\",\"System_Code\":\"YT\",\"Og_id_ChargeFirst\":\"YT-SZ\",\"Og_id_ChargeSecond\":\"\",\"Arrival_Date\":\"2020-10-28T09:18:16\",\"Country\":\"AR\",\"Postcode\":\"518000\",\"City\":\"005001\",\"Province\":\"005\",\"Charge_Weight\":1.852,\"Unit_Code\":\"KG\",\"Unit_Length\":\"CM\",\"Unit_Area\":null,\"Unit_Bulk\":null,\"Unit_Volume\":null,\"Pieces\":5,\"Category_Code\":\"5\",\"Declared_Value\":0.8,\"Currency\":\"RMB\",\"Tariff\":\"0.6\",\"Airline\":\"中国南方\",\"Departure_Airport\":\"宝安机场\",\"Destination_Airport\":\"伦敦机场\",\"Customs_Clearance_Port\":\"QHKA\",\"Start_Place\":\"MD\",\"end_Place\":\"MX\",\"Remark\":null,\"Ticket\":5,\"HS_Code\":5,\"Box_Number\":5,\"First_Long\":0.0,\"Two_Long\":0.0,\"Three_Long\":0.0,\"BusinessTime\":\"2020-03-11T00:00:00\",\"airline_two_code\":\"BR\",\"detailEntities\":null,\"Goods_Code\":null,\"Extra_ServicesList\":[{\"ExtraService\":\"rt\",\"ExtraService_Coefficient\":0.8},{\"ExtraService\":\"py\",\"ExtraService_Coefficient\":0.7},{\"ExtraService\":\"aa\",\"ExtraService_Coefficient\":0.6}],\"IsFinalCharge\":false,\"ChargType\":null,\"HCustomsNumber\":0.0,\"MCustomsNumber\":0.0,\"LCustomsNumber\":0.0,\"HCargoValueNumber\":0.0,\"MCargoValueNumber\":0.0,\"LCargoValueNumber\":0.0,\"Charge_Volume\":5.0,\"Truck_Number\":1,\"Tray_Number\":1,\"TimeUnti\":\"Day\",\"TimeVaule\":5,\"TrackingNumber\":\"33P\",\"StartCountry\":\"IT\",\"EndCountry\":\"DE\",\"HAWB_Number\":3,\"Start_TransferPoint\":\"MD\",\"End_TransferPoint\":\"MX\"}'" \
+                     ");"% (id,Waybill_Code, Waybill_Code, Server_Code,ServerPlace_Code,)
+        excute_sql(dts_db, dts_conn, insert_sql)
         print("派送费用插入PQM成功")
+
     except Exception as e:
         print(e)
 def fee_to_kunei(Waybill_Code,date_time,Procedure_Type,Og_id_ChargeFirst):
@@ -252,18 +279,19 @@ def fee_to_zhuanyun(Waybill_Code,Car_Number,Server_Code,source,Charge_Weight,Sta
         source="YT"
     else:
         source = "WT"
-    data = {"Waybill_Code":Waybill_Code,"Currency_Code":"KC","Car_Number":Car_Number,"Customer_Code":None,"Product_Code":"","Server_Code":Server_Code,"Server_Type":None,"ServerPlace_Code":None,"System_Code":source,"Og_id_ChargeFirst":None,"Og_id_ChargeSecond":None,"Arrival_Date":BusinessTime,"Country":None,"Postcode":None,"City":None,"Province":None,"Charge_Weight":Charge_Weight,"Unit_Code":"KG","Unit_Length":None,"Unit_Area":None,"Unit_Bulk":None,"Unit_Volume":None,"ExtraService":None,"ExtraService_Coefficient":None,"Pieces":0,"Category_Code":None,"Declared_Value":0.0,"Currency":None,"Tariff":None,"Airline":None,"Departure_Airport":None,"Destination_Airport":None,"Customs_Clearance_Port":None,"Start_Place":Start_Place,"end_Place":end_Place,"Remark":None,"Ticket":0,"HS_Code":0,"Box_Number":0,"First_Long":0.0,"Two_Long":0.0,"Three_Long":0.0,"BusinessTime":BusinessTime,"airline_two_code":None,"detailEntities":None,"Goods_Code":None,"IsFinalCharge":False,"ChargType":None,"HCustomsNumber":0.0,"MCustomsNumber":0.0,"LCustomsNumber":0.0,"HCargoValueNumber":0.0,"MCargoValueNumber":0.0,"LCargoValueNumber":0.0,"Charge_Volume":2.000,"Tray_Number":0,"Truck_Number":0,"TimeUnti":None,"TimeVaule":0,"TrackingNumber":None}
+    data = {"Waybill_Code":Waybill_Code,"Currency_Code":"KC","Car_Number":Car_Number,"Customer_Code":None,"Product_Code":"","Server_Code":Server_Code,"Server_Type":None,"ServerPlace_Code":None,"System_Code":source,"Og_id_ChargeFirst":"YT-SZ","Og_id_ChargeSecond":None,"Arrival_Date":BusinessTime,"Country":None,"Postcode":None,"City":None,"Province":None,"Charge_Weight":Charge_Weight,"Unit_Code":"KG","Unit_Length":None,"Unit_Area":None,"Unit_Bulk":None,"Unit_Volume":None,"ExtraService":None,"ExtraService_Coefficient":None,"Pieces":0,"Category_Code":None,"Declared_Value":0.0,"Currency":None,"Tariff":None,"Airline":None,"Departure_Airport":None,"Destination_Airport":None,"Customs_Clearance_Port":None,"Start_Place":Start_Place,"end_Place":end_Place,"Remark":None,"Ticket":0,"HS_Code":0,"Box_Number":0,"First_Long":0.0,"Two_Long":0.0,"Three_Long":0.0,"BusinessTime":BusinessTime,"airline_two_code":None,"detailEntities":None,"Goods_Code":None,"IsFinalCharge":False,"ChargType":None,"HCustomsNumber":0.0,"MCustomsNumber":0.0,"LCustomsNumber":0.0,"HCargoValueNumber":0.0,"MCargoValueNumber":0.0,"LCargoValueNumber":0.0,"Charge_Volume":2.000,"Tray_Number":0,"Truck_Number":0,"TimeUnti":None,"TimeVaule":0,"TrackingNumber":None}
     request_data = {
     "waybill_code": Waybill_Code,
     "jsonstring": json.dumps(data, ensure_ascii=False),
     "system_source": source,
     "cost_type": "ZY"
 }
+
     print(request_data)
-    request_url = url.pqm_url + "api/CostChargedJson/AddAirCostChargedJson"
+    request_url = url.pqm_url + "api/CostTransfer/AddBillJson"
     print(request_url)
     data = requests.post(url=request_url, json=request_data).text
-    print(data)
+    print("发货中转返回值",data)
     if '"Code":0' in data:
         print("转运费用推送pqm成功！！！", request_data)
         # return request_data["shipper_hawbcode"]
@@ -283,7 +311,7 @@ def fee_to_qingguan(Waybill_Code,Server_Code,ServerPlace_Code,source,Charge_Weig
     "cost_type": "QG"
 }
     print(request_data)
-    request_url = url.pqm_url + "api/CostChargedJson/AddAirCostChargedJson"
+    request_url = url.pqm_url + "api/CostClearance/AddBillJson"
     print(request_url)
     data = requests.post(url=request_url, json=request_data).text
     print(data)
@@ -336,7 +364,7 @@ def fee_to_diaobo(transport_hawbcode,charge_type_code,db_time):
         request_data["orig_warehouse_code"]= "YT-GZ"
         request_data["dest_warehouse_code"] = "YT-XM"
     print(request_data)
-    request_url = url.pqm_url + "api/CostChargedJson/PulshAirTransferChargeJson"
+    request_url = url.pqm_url + "api/CostAirTransfer/AddBillJson"
     print(request_url)
     data = requests.post(url=request_url, json=request_data).text
     print(data)
@@ -351,7 +379,7 @@ def fee_to_chongpai(Waybill_Code,Customer_Code,ServerPlace_Code,serverCode,db_ti
     else:
         source = "WT"
     data = {
-	"Waybill_Code": Waybill_Code["shipperCode"],
+	"Waybill_Code": Waybill_Code["shipperCode"]+"-1",
 	"Currency_Code": "YD",
 	"Customer_Code":Customer_Code,
 	"Product_Code": "",
@@ -372,7 +400,7 @@ def fee_to_chongpai(Waybill_Code,Customer_Code,ServerPlace_Code,serverCode,db_ti
   "jsonstring": json.dumps(data,ensure_ascii=False),
   "waybill_code": Waybill_Code["shipperCode"],
   "system_source": source,
-    "cost_type":"PS"
+  "cost_type":"PS"
 }
     print(request_data)
     request_url = url.pqm_url + "api/BilJsonchargedCost/AddCostBilJsoncharged"

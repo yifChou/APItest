@@ -1,12 +1,12 @@
 import random
 import itertools
-data10 = '1234567890'
-result = itertools.combinations(data10, 5)
-for i in result:
-    #print(i,type(i))
-    data10 = map(list,data10)
-    for i in data10:
-        print(i)
+# data10 = '1234567890'
+# result = itertools.combinations(data10, 5)
+# for i in result:
+#     #print(i,type(i))
+#     data10 = map(list,data10)
+#     for i in data10:
+#         print(i)
     #print(data10)
 
 
@@ -75,3 +75,71 @@ if __name__=="__main__":
     # a,b=serverchannelcode_dict["yif"]
     # Customs_Clearance_Port, Currency = ["AMS", "RMB"]
     # print(a,b,Customs_Clearance_Port, Currency)
+# def lading_generate(f,lading_number,data):
+#     if str(lading_number) not in str(data):
+#         f.writelines(str(lading_number) + "\n")
+#         return lading_number
+#     else:
+#         lading_generate(lading_generate)
+# def lading_generate():
+#     try:
+#         with open("lading_number.txt", "r+") as f:
+#             data = f.readlines()
+#             # for i in data:
+#             #     print(i)
+#             lading_number = random.randint(10,99)
+#             #print("txt",str(data))
+#             #print(str(ladings))
+#             if str(lading_number) not in str(data):
+#                 f.writelines(str(lading_number)+"\n")
+#                 return lading_number
+#             else:
+#                 lading_generate()
+#                 return "11111"
+#     except Exception as e:
+#         print("生成单号重复多次")
+        #return "11111"
+# def lading_generate():
+#     try:
+#         with open("lading_number.txt", "r+") as f:
+#             data = f.readlines()
+#             # for i in data:
+#             #     print(i)
+#             lading_number = random.randint(1000,9999)
+#             #print("txt",str(data))
+#             #print(str(ladings))
+#             if str(lading_number) not in str(data):
+#                 f.writelines(str(lading_number)+"\n")
+#             else:
+#                 lading_number=""
+#
+#             if lading_number=="":
+#                 lading_generate()
+#                 return random.randint(10000,99999)
+#
+#             return lading_number
+#     except Exception as e:
+#         print("生成单号重复多次")
+#         return "11111"
+def lading_generate():
+    '''随机生成4位不重复的数值'''
+    file_name = "lading_number"+ymd()
+    try:
+        with open(file_name + ".txt","r+") as f:
+            data = f.readlines()
+            # for i in data:
+            #     print(i)
+            lading_number = random.randint(1000,9999)
+            #print("txt",str(data))
+            #print(str(ladings))
+            if str(lading_number) not in str(data):
+                f.writelines(str(lading_number)+"\n")
+                return lading_number
+            else:
+                lading_generate()
+                return random.randint(10000,99999)
+    except Exception as e:
+        print("生成单号重复多次")
+        return random.randint(10000, 99999)
+for i in range(10):
+    print(lading_generate())
