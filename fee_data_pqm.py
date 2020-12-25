@@ -79,7 +79,7 @@ def fee_to_air_diaobo(lading_number,Server_Code,source,Charge_Weight,Currency,bs
   "Current_date":bs_time
 }
     print(request_data)
-    request_url = url.fms + "/api/AirFee/CreateAirFee"
+    request_url = url.fms + "api/CostAirTransfer/AddBillJson"
     print(request_url)
     data = requests.post(url=request_url, json=request_data).text
     print(data)
@@ -210,23 +210,43 @@ def fee_to_paisong(Waybill_Code,Server_Code,ServerPlace_Code,B_time):
     except Exception as e:
         print(e)
 def fee_to_kunei(Waybill_Code,date_time,Procedure_Type,Og_id_ChargeFirst):
-    dts_db, dts_conn = connect_it_100(database_name="pqm_db")
-    try:
-        Waybill_Code=Waybill_Code
-        date_time =date_time
-        Procedure_Type=Procedure_Type
-        Og_id_ChargeFirst=Og_id_ChargeFirst
-        kunei_fee_sql = "INSERT INTO `pqm_db`.`cost_charged_json`( `waybill_code`, `jsonstring`, `opt_state`, `create_time`, `error_count`, `error_message`, `system_source`, `md5`, `cost_type`, `db_type`, `procedure_code`)"\
-        "VALUES ('%s', '{\"Waybill_Code\":\"%s\",\"Charge_Date\":\"%s\",\"Charge_Weight\":12.0,\"Unit_Code\":None,\"Procedure_Type\":\"%s\",\"Og_id_ChargeFirst\":\"%s\",\"System_Code\":\"YT\"}', 'O', '%s', 0, '', 'YT', '', 'CZ', NULL, '%s');"%(Waybill_Code,Waybill_Code,date_time,Procedure_Type,Og_id_ChargeFirst,date_time,Procedure_Type)
-        #print(kunei_fee_sql)
-        excute_sql(dts_db, dts_conn, kunei_fee_sql)
-        print("库内调拨费用插入PQM成功")
-        dts_db.close()
-        dts_conn.close()
-    except Exception as e:
-        dts_db.close()
-        dts_conn.close()
-        print(e)
+
+    request_data = {
+    "shipper_hawbcode":Waybill_Code,
+    "orig_warehouse_og_code":Og_id_ChargeFirst,
+    "operation_type_code":Procedure_Type,
+    "operation_time":date_time,
+    "weight":"1.5",
+    "weight_unit_code":"KG",
+    "system_source_code":"101"
+}
+    print(request_data)
+    request_url = url.pqm_url + "api/CostAllocate/AddBillJson"
+    print(request_url)
+    data = requests.post(url=request_url, json=request_data).text
+    print(data)
+    if '推送成功' in data:
+        print("库内调拨费用插入PQM成功！！！", request_data)
+        # return request_data["shipper_hawbcode"]
+    else:
+        print("库内调拨费用推送pqm失败", request_url, data, request_data)
+    # dts_db, dts_conn = connect_bms(database_name="bms_db")#换库和表2个jsn_cost_allocate  jsn_cost_allocate_json
+    # try:
+    #     Waybill_Code=Waybill_Code
+    #     date_time =date_time
+    #     Procedure_Type=Procedure_Type
+    #     Og_id_ChargeFirst=Og_id_ChargeFirst
+    #     kunei_fee_sql = "INSERT INTO `pqm_db`.`cost_charged_json`( `waybill_code`, `jsonstring`, `opt_state`, `create_time`, `error_count`, `error_message`, `system_source`, `md5`, `cost_type`, `db_type`, `procedure_code`)"\
+    #     "VALUES ('%s', '{\"Waybill_Code\":\"%s\",\"Charge_Date\":\"%s\",\"Charge_Weight\":12.0,\"Unit_Code\":None,\"Procedure_Type\":\"%s\",\"Og_id_ChargeFirst\":\"%s\",\"System_Code\":\"YT\"}', 'O', '%s', 0, '', 'YT', '', 'CZ', NULL, '%s');"%(Waybill_Code,Waybill_Code,date_time,Procedure_Type,Og_id_ChargeFirst,date_time,Procedure_Type)
+    #     #print(kunei_fee_sql)
+    #     excute_sql(dts_db, dts_conn, kunei_fee_sql)
+    #     print("库内调拨费用插入PQM成功")
+    #     dts_db.close()
+    #     dts_conn.close()
+    # except Exception as e:
+    #     dts_db.close()
+    #     dts_conn.close()
+    #     print(e)
 def fee_to_air():
     dts_db, dts_conn = connect_it_100(database_name="pqm_db")
     sql = "select * from cost_charged_json limit 1"
@@ -403,7 +423,7 @@ def fee_to_chongpai(Waybill_Code,Customer_Code,ServerPlace_Code,serverCode,db_ti
   "cost_type":"PS"
 }
     print(request_data)
-    request_url = url.pqm_url + "api/BilJsonchargedCost/AddCostBilJsoncharged"
+    request_url = url.pqm_url + "api/CostDeliver/AddBillJson"
     print(request_url)
     data = requests.post(url=request_url, json=request_data).text
     print(data)

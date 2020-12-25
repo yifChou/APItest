@@ -2,10 +2,10 @@ class url:
     #fms ="http://fmsapi.yunexpress.com/"#线上
     fms = "http://192.168.88.140/" #开发环境
     #fms = "http://fmsapi.uat.yunexpress.com/" #UAT
-    crm_url = "http://10.168.95.192:5000"
+    crm_url = "http://10.168.95.114:5000" #本地 "http://192.168.122.205:5000" 开发环境 http://10.168.95.192:5000 #
     pqm_url = " http://192.168.88.116:5000/" #开发环境
     #ProductCode=["ABC"] #["PK0461","ZH20207","USZMTK","XYLXB","1103"] 产品代码
-    ProductCode=["3303"]#"PK0442","PK0461","ZH20207","USZMTK","1103","ABC","XYLXB","EUB-SZ",
+    ProductCode=["PK0461"]#"PK0442","PK0461","ZH20207","USZMTK","1103","ABC","XYLXB","EUB-SZ",
     # 中转结算产品 "001003"
     # 理赔 "DE-TEST"
     # 海外重派 发货中转 "PK0442"
@@ -17,11 +17,14 @@ class url:
     # 空运 DHLSG5  PK0054 3303
     # 调拨运输 ATZXR
     # 陈青连 ZH20207
-    yifserverchannelcode = [ "GJY","TEST007", "SHQ"]#"GZYJ","SPLUSZ"#末端服务渠道"TEST007", "SHQ", "GJY", "CNDHL"   "GZYJ","SPLUSZ",
+    # 江佳 20087
+    # 曹嘉 DHLSG5
+    # 林思虹 PK0461
+    yifserverchannelcode = [ "GJY","TEST007", "SHQ","GZYJ"]#"GZYJ","SPLUSZ"#末端服务渠道"TEST007", "SHQ", "GJY", "CNDHL"   "GZYJ","SPLUSZ",
     AB123serverchannelcode=["HERMES","ABCZ"]
     fiveserverchannelcode=["TEST007", "SHQ", "GJY", "CNDHL"]
 class sys_data:
-    severCode = ["yif"] #服务商代码"MIAEND", "BJYWW", , "A1109"
+    severCode = ["5555555"] #服务商代码"MIAEND", "BJYWW", , "A1109"
 #!/user/bin/env python
 #coding:utf-8
 

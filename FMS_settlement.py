@@ -1,4 +1,4 @@
-from request_fms import request_lipei,request_chongpai_fee,request_airlading_fee,request_car_fee,request_customer_fee,request_diaobo_fee,fahuo_with_bag,add_airlading,request_fahuo_fee
+from request_fms import *
 from connect_mysql import *
 from common_util import *
 from fee_data_pqm import fee_to_zhuanyun
@@ -31,8 +31,8 @@ def sql_to_fhzzbill_details(billid,servercod,currency,lading_list):
             md5_str = fms_db.fetchall()[0][0]+y_m_d()
             print("md5_str",md5_str)
             hash_code = md5_32_upper(md5_str)
-            sql_data = "INSERT INTO `fms_db_now`.`transport_reconcile_bill_detail`(`reconcile_id`, `hash_code`, `car_number`, `delivery_day`, `server_code`, `reconcile_status`, `deal_status`, `deal_type`, `allocation_status`, `is_revoke`, `is_refuse`, `amount`, `confirm_amount`, `currency`, `charge_weight`, `charge_unit`, `box`, `org_code`, `destination`, `arrival_time`, `remark`, `refuse_remark`) VALUES " \
-                       "( %s, '%s', '%s', '%s', '%s', 'F', 'S', 'B', 'N', 'N', 'N', 300.0000, 300.0000, '%s', 3.000, 'kg', 2, 'FX', '数字转运点', '%s', 'test-python', '');" \
+            sql_data = "INSERT INTO `fms_db_now`.`transport_reconcile_bill_detail`(`reconcile_id`, `hash_code`, `car_number`, `delivery_day`,`delivery_time`, `server_code`, `reconcile_status`, `deal_status`, `deal_type`, `allocation_status`, `is_revoke`, `is_refuse`, `amount`, `confirm_amount`, `currency`, `charge_weight`, `charge_unit`, `box`, `org_code`, `destination`, `arrival_time`, `remark`, `refuse_remark`) VALUES " \
+                       "( %s, '%s', '%s', '%s',NOW(), '%s', 'F', 'S', 'B', 'N', 'N', 'N', 300.0000, 300.0000, '%s', 3.000, 'kg', 2, 'FX', '数字转运点', '%s', 'test-python', '');" \
                        % (billid, hash_code, lading_number, y_m_d(), servercod, currency, y_m_d000())
             if excute_sql(fms_db, fms_conn, sql_data) != 1:
                 print("遇到异常")
@@ -57,6 +57,14 @@ def sql_to_fhzzbill_fee(billid,servercode,currency,lading_list):
                         if excute_sql(fms_db, fms_conn, sql_data) != 1:
                             print("遇到异常")
                             return 0
+def sql_to_fhzzbill_fentan_bag(lading_sum,org_code,destination,bag_list,shipper_list,Charge_Weight,fh_servercode,if_pqm,source):
+    lading_list=[]
+    for i in range(lading_sum):
+        lading_number = request_fahuo_withbag_fee(bag_list=bag_list, org_code=org_code, destination=destination, charge_weight=Charge_Weight, shipper_list=shipper_list, servercode=fh_servercode, if_pqm=if_pqm,source=source)
+        lading_list.append(lading_number)
+    billid = sql_to_fhzzbill(servercod=fh_servercode)
+    sql_to_fhzzbill_details(billid=billid, lading_list=lading_list,servercod=servercode,currency=currency)
+    sql_to_fhzzbill_fee(billid=billid, lading_list=lading_list,servercode=servercode,currency=currency)
 def sql_to_fhzzbill_fentan(lading_sum,org_code,destination,box,waybill_number,charge_weight,customerCode,bill_count,servercode,transfertype,source,iffahuo):
     lading_list=[]
     for i in range(lading_sum):
@@ -118,6 +126,16 @@ def sql_to_diaobobill_fee(billid,servercode,currency,lading_list):
                 if excute_sql(fms_db, fms_conn, sql_data) != 1:
                     print("遇到异常")
                     return 0
+def sql_to_diaobobill_fentan_bag(lading_sum,bag_list, shipper_list,if_pqm,transport_type_code,servercode, source,currency):
+    lading_list=[]
+    for i in range(lading_sum):
+        diaobo_number=random.randint(10000,99999)
+        lading_number = request_diaobo_withbag_fee(bag_list,shipper_list,diaobo_number,transport_type_code,if_pqm,source)
+        lading_number=lading_number.replace("DH","")
+        lading_list.append(lading_number)
+    billid = sql_to_diaobobill(servercod=servercode)
+    sql_to_diaobobill_details(billid=billid, lading_list=lading_list,servercod=servercode,currency=currency)
+    sql_to_diaobobill_fee(billid=billid, lading_list=lading_list,servercode=servercode,currency=currency)
 def sql_to_diaobobill_fentan(lading_sum,bag_number, waybill_number, customerCode, yt_number, transfertype,transport_type_code,servercode, source,currency):
     lading_list=[]
     for i in range(lading_sum):
@@ -180,6 +198,14 @@ def sql_to_qgbill_fee(car_id_list):
                 if excute_sql(fms_db, fms_conn, sql_data) != 1:
                     print("遇到异常")
                     return 0
+def sql_to_qgbill_fentan_bag(lading_number,bag_list, shipper_list,qg_servercode, customerCode,if_vat,source):
+    car_list=[]
+    for i in range(lading_number):
+        car_number1 = request_customer_withbag_fee(lading_number=lading_number, bag_list=bag_list, shipper_list=shipper_list, qg_servercode=qg_servercode, customerCode=customerCode, if_vat=if_vat, source=source)
+        car_list.append(car_number1)
+    billid = sql_to_qgbill(servercod=qg_servercode)
+    car_id_list = sql_to_qgbill_cardetails(billid=billid, lading_list=car_list)
+    sql_to_qgbill_fee(car_id_list=car_id_list)
 def sql_to_qgbill_fentan(lading_number,lading_index, bag_number,servercode,qg_servercode, waybill_number, customerCode, Charge_Weight, yt_number, fee_number, transfertype, ifotherfee, source):
     car_list=[]
     for i in range(lading_number):
@@ -229,6 +255,25 @@ def sql_to_qgydbill_fee(billid,car_id_list):
                 if excute_sql(fms_db, fms_conn, sql_data) != 1:
                     print("遇到异常")
                     return 0
+def sql_to_qgydbill_fentan_bag(lading_number,qg_servercode, customerCode, source):
+    car_list=[]
+    for i in range(lading_number):
+        car_number1 = request_customer_withbag_fee(lading_number=lading_number, bag_list=bag_list, shipper_list=shipper_list, qg_servercode=qg_servercode, customerCode=customerCode, if_vat=1, source=source)
+        car_list.append(car_number1)
+    billid = sql_to_qgydbill(servercod=qg_servercode)
+    time.sleep(5)
+    print("休眠5s")
+    for lading_number in car_list:
+        bill_yd = "select shipper_hawbcode from lading_bsn_relate where lading_id IN(select customs_id from customs_info where lading_number='%s') and relate_type='C';" % (
+            lading_number)
+        if excute_sql(fms_db, fms_conn, bill_yd) == 1:
+            yd_code = list(fms_db.fetchall())
+            yd_code = [yd[0] for yd in yd_code]
+            print(yd_code)
+            sql_to_qgydbill_details(billid=billid, lading_list=yd_code)
+            sql_to_qgydbill_fee(car_id_list=yd_code, billid=billid)
+        else:
+            return []
 def sql_to_qgydbill_fentan(lading_number,lading_index, bag_number,servercode,qg_servercode, waybill_number, customerCode, Charge_Weight, yt_number, fee_number, transfertype, ifotherfee, source):
     car_list=[]
     for i in range(lading_number):
@@ -268,6 +313,7 @@ def sql_to_carbill(servercod):
     else:
         print("遇到异常!!!")
 def sql_to_carbill_cardetails(billid,car_list):
+    time.sleep(2)
     for car_number in car_list:
         sql_car_id = "SELECT transit_Id FROM transit_info WHERE car_number='%s';"%(car_number)
         if excute_sql(fms_db, fms_conn, sql_car_id) == 1:
@@ -300,6 +346,14 @@ def sql_to_carbill_fee(car_id_list):
                 if excute_sql(fms_db, fms_conn, sql_data) != 1:
                     print("遇到异常")
                     return 0
+def sql_to_carbill_fentan_bag(car_sum,car_number,bag_list,CountryCode,transit_country,customerCode,servercode,source,if_pqm,iffahuo):
+    car_list=[]
+    for i in range(car_sum):
+        car_number1 = request_car_with_bag_fee(data=car_number+i, CountryCode=CountryCode, transit_country=transit_country, bag_list=bag_list, customerCode=customerCode, source=source, if_pqm=if_pqm, iffahuo=iffahuo)
+        car_list.append(car_number1)
+    billid = sql_to_carbill(servercod=servercode)
+    car_id_list = sql_to_carbill_cardetails(billid=billid, car_list=car_list)
+    sql_to_carbill_fee(car_id_list=car_id_list)
 def sql_to_carbill_fentan(car_sum,car_number,CountryCode,transit_country,bag_number,waybill_number,customerCode,yt_number,servercode,transfertype,source,iffahuo):
     car_list=[]
     for i in range(car_sum):
@@ -322,11 +376,11 @@ def sql_to_airbill(servercod):
             return bill_id
     else:
         print("遇到异常!!!")
-def sql_to_airbill_ladingdetails(billid,lading_list):
+def sql_to_airbill_ladingdetails(billid,currency,lading_list):
     for lading_number in lading_list:
         sql_data = "INSERT INTO `fms_db_now`.`air_shipperbill_lading_detail`( `isid`, `contrast_state`, `state`, `audit_state`, `eliminate_state`, `allocation_state`, `allocation_Id`, `laborcost_state`, `laborcost_allocation_Id`, `iscancel`, `lading_number`, `amount`, `currency_code`, `process_type`, `remark`, `createdon`, `createdby`, `auditby`, `auditon`, `eliminateby`, `eliminateon`, `last_update_on`, `last_update_by`, `DataSource`, `isback`) " \
-                   "VALUES (%s, 'N', 'S', 'Y', 'N', 'N', NULL, 'N', 0, 'N', '%s', 432.49, '', 'B', '', '%s', 1, 1, '%s', 0, '%s', '%s', 1, 'B', 'N');"\
-                   %(billid,lading_number,now(),now(),now(),now())
+                   "VALUES (%s, 'N', 'S', 'Y', 'N', 'N', NULL, 'N', 0, 'N', '%s', 432.49, '%s', 'B', '', '%s', 1, 1, '%s', 0, '%s', '%s', 1, 'B', 'N');"\
+                   %(billid,lading_number,currency,now(),now(),now(),now())
         if excute_sql(fms_db, fms_conn, sql_data) != 1:
             print("遇到异常")
             return 0
@@ -350,13 +404,22 @@ def sql_to_airbill_fee(billid,lading_list):
                 if excute_sql(fms_db, fms_conn, sql_data) != 1:
                     print("遇到异常")
                     return 0
-def sql_to_airbill_fentan(lading_sum,lading_index,bag_number,waybill_number,customerCode,Charge_Weight,yt_number,fee_number,servercode,transfertype,ifotherfee,source):
+def sql_to_airbill_fentan_bag(lading_sum,lading_index,bag_list,shipper_list,customerCode,Charge_Weight,servercode,currency,source):
+    lading_list=[]
+    for i in range(lading_sum):
+        lading_number = request_airlading_withbag_fee(lading_number=str(lading_index+i), bag_list=bag_list, shipper_list=shipper_list, customerCode=customerCode, servercode=servercode, Charge_Weight=Charge_Weight,currency=currency,fee_number=3, source=source)
+        lading_list.append(lading_number)
+    billid = sql_to_airbill(servercod=servercode)
+    sql_to_airbill_ladingdetails(billid=billid,currency=currency, lading_list=lading_list)
+    sql_to_airbill_fee(billid=billid, lading_list=lading_list)
+    return lading_list
+def sql_to_airbill_fentan(lading_sum,lading_index,bag_number,waybill_number,customerCode,Charge_Weight,yt_number,fee_number,servercode,transfertype,ifotherfee,currency,source):
     lading_list=[]
     for i in range(lading_sum):
         lading_number,bags = request_airlading_fee(lading_index+i+1,bag_number,waybill_number,customerCode,Charge_Weight,yt_number,fee_number,servercode,transfertype,ifotherfee,source)
         lading_list.append(lading_number)
     billid = sql_to_airbill(servercod=servercode)
-    sql_to_airbill_ladingdetails(billid=billid, lading_list=lading_list)
+    sql_to_airbill_ladingdetails(billid=billid,currency=currency, lading_list=lading_list)
     sql_to_airbill_fee(billid=billid, lading_list=lading_list)
 def sql_to_lipei_settlement(servercode,check_type,checkpattern):
     '''
@@ -449,6 +512,27 @@ def sql_moduan_shenhe_fee(billId,ifmingxi=1):
                     if excute_sql(fms_db, fms_conn, data) != 1:
                         print("遇到异常")
                         return 0
+def sql_to_chongpai_daijiesuan_bag(customerCode,if_pqm,servercode,source):
+    '''
+    理赔明细对账-实际
+    :param yd_number:
+    :param waybill_number:
+    :param customerCode:
+    :param transfertype:
+    :param servercode:
+    :param source:
+    :return:
+    '''
+    billid = sql_to_chongpai_settlement(servercode,check_type="O",bill_type="A")
+    hawbcode_list=[]
+    hawbcodes = request_chongpai_withbag_fee(shipper_list,customerCode,servercode,if_pqm,source)
+    for hawbcode in hawbcodes:
+        hawbcode = hawbcode + "-1"
+        hawbcode_list.append(hawbcode)
+    sql_moduan_mingxi(billId=billid, hawbcode=hawbcode_list)
+    sql_moduan_shenhe_fee(billId=billid)
+    data_to_asyncdata(billid=billid,servercode=servercode,BsnType="O",pattern="R")
+    return hawbcode_list
 def sql_to_chongpai_daijiesuan(yd_number,waybill_number,customerCode,transfertype,servercode,source):
     '''
     理赔明细对账-实际
@@ -573,6 +657,13 @@ def sql_MDlading_mingxi(billId,lading_list):
                     print("遇到异常8!!!")
         else:
             print("遇到异常9!!!")
+def sql_to_MDlading_daijiesuan_bag(lading_list,md_servercode):
+    '''
+    :return:
+    '''
+    billid = sql_to_chongpai_settlement(servercode=md_servercode,check_type="N",bill_type="T")
+    sql_MDlading_mingxi(billid, lading_list)
+    return lading_list
 def sql_to_MDlading_daijiesuan(lading_number,md_servercode,lading_index,bag_number,waybill_number,customerCode,Charge_Weight,yt_number,fee_number,servercode,transfertype,ifotherfee,source):
     '''
     理赔明细对账-实际
@@ -594,7 +685,7 @@ def sql_to_MDlading_daijiesuan(lading_number,md_servercode,lading_index,bag_numb
             bag_list.append(bag["bag_labelcode"])
         #末端账单与提单明细
         #sql = "select * from end_reconcile_lading_billdetails where billId in(select end_reconcile_billId from  end_reconcile_bill  where check_number='%s');"%(lading)
-    car_data = fahuo_with_bag(bag_list=bag_list, server_code="5555555", box=1, bill_count=1, charge_weight=3.33, org_code="43", destination="CC", source=1)
+    car_data = fahuo_with_bag(bag_list=bag_list, server_code="5555555", bill_count=1, charge_weight=3.33, org_code="43", destination="CC", source=1)
     fee_to_zhuanyun(Car_Number=car_data["car_number"], Waybill_Code=car_data["departure_number"],
                     Server_Code="5555555", source=source, Charge_Weight=3.33, Start_Place="43",
                     end_Place="CC", BusinessTime=now_T())
@@ -605,6 +696,22 @@ def sql_to_MDlading_daijiesuan(lading_number,md_servercode,lading_index,bag_numb
     # sql_moduan_shenhe_fee(billId=billid)
     #data_to_asyncdata(billid=billid,servercode=servercode,BsnType="O",pattern="R")
     return hawbcode_list
+def sql_to_MDYD_daijiesuan_bag(shipper_code_list, servercode):
+    '''
+    理赔明细对账-实际
+    :param yd_number:
+    :param waybill_number:
+    :param customerCode:
+    :param transfertype:
+    :param servercode:
+    :param source:
+    :return:
+    '''
+    billid = sql_to_chongpai_settlement(servercode,check_type="N",bill_type="Y")
+    sql_moduan_mingxi(billId=billid, hawbcode=shipper_code_list)
+    sql_moduan_shenhe_fee(billId=billid)
+    #data_to_asyncdata(billid=billid,servercode=servercode,BsnType="O",pattern="R")
+    return shipper_code_list
 def sql_to_MDYD_daijiesuan(lading_number,lading_index, bag_number, waybill_number, customerCode,Charge_Weight, yt_number, fee_number, servercode, transfertype, ifotherfee,source):
     '''
     理赔明细对账-实际
@@ -617,39 +724,15 @@ def sql_to_MDYD_daijiesuan(lading_number,lading_index, bag_number, waybill_numbe
     :return:
     '''
     billid = sql_to_chongpai_settlement(servercode,check_type="N",bill_type="Y")
-    # hawbcode_list=[]
-    # for i in range(yd_number):
-    #     hawbcode = request_yt(waybill_number+i,customerCode,transfertype,servercode,source)
-    #     hawbcode_list.append(hawbcode)
-    # ''''''
-    # bags = data_lading_bag(bag_number, waybill_number, customerCode, yd_number, servercode, transfertype, source)
-    # shipper_code_list = []
-    # bag_code_list = []
-    # for bag in bags:
-    #     shipper_code_list+=bag["shipperItems"]
-    #     bag_code_list.append(bag["bag_labelcode"])
-    # add_airlading(bag_code_list, bag_number, yd_number, servercode, source)
-    # ''''''
-
-    # car_number = request_fahuo_fee(org_code,destination,box,waybill_number,charge_weight,customerCode,bill_count,servercode,transfertype,source,iffahuo)
-    # select_car_shipper = "select ShipperCode from bsn_receivablebusiness where ShipperCode IN(select shipper_code from bag_business_detail where bag_labelcode in(SELECT bag_labelcode FROM transport_bag_detail WHERE car_number='%s' ));"%(car_number)
-    # shipper_code_list=[]
-    # if excute_sql(fms_db, fms_conn, select_car_shipper) == 1:
-    #     data_list = fms_db.fetchall()
-    #     for data in data_list:
-    #         shipper_code_list.append(data[0])
-    # else:
-    #     print("遇到异常9!!!")
-
     shipper_code_list = []
     bag_list = []
     for i in range(lading_number):
         lading, bags = request_airlading_fee(lading_index + i + 1, bag_number, waybill_number, customerCode,
                                              Charge_Weight, yt_number, fee_number, servercode, transfertype, ifotherfee,
                                              source)
-        shipper_code_list.append(lading)
         for bag in bags:
             bag_list.append(bag["bag_labelcode"])
+            shipper_code_list = shipper_code_list +bag["shipperItems"]
         # 末端账单与提单明细
         # sql = "select * from end_reconcile_lading_billdetails where billId in(select end_reconcile_billId from  end_reconcile_bill  where check_number='%s');"%(lading)
     car_data = fahuo_with_bag(bag_list=bag_list, server_code="5555555", box=1, bill_count=1, charge_weight=3.33,
@@ -707,7 +790,23 @@ def sql_lipei_shenhe_fee(billId,servercode,ifmingxi=1):
         if excute_sql(fms_db, fms_conn, sql_lipei_fentan_fee) != 1:
             print("遇到异常")
             return 0
-
+def sql_to_liepei_mingxi_daijiesuan_bag(shipper_list,servercode,source):
+    '''
+    理赔明细对账-实际
+    :param yd_number:
+    :param waybill_number:
+    :param customerCode:
+    :param transfertype:
+    :param servercode:
+    :param source:
+    :return:
+    '''
+    billid = sql_to_lipei_settlement(servercode, checkpattern="D",check_type="C")
+    request_lipei_with_bag(shipper_list,servercode,source)
+    sql_lipei_mingxi(billId=billid, hawbcode=shipper_list)
+    sql_lipei_shenhe_fee(billId=billid,servercode=servercode)
+    data_to_asyncdata(billid=billid,servercode=servercode,BsnType="M",pattern="R")
+    return shipper_list
 def sql_to_liepei_mingxi_daijiesuan(yd_number,waybill_number,customerCode,transfertype,servercode,source):
     '''
     理赔明细对账-实际
@@ -728,6 +827,7 @@ def sql_to_liepei_mingxi_daijiesuan(yd_number,waybill_number,customerCode,transf
     sql_lipei_shenhe_fee(billId=billid,servercode=servercode)
     data_to_asyncdata(billid=billid,servercode=servercode,BsnType="M",pattern="R")
     return hawbcode_list
+
 def sql_fentan_log(billid, fen_type):
     print("理赔对账编号插入分摊job队列-----")
 
@@ -736,6 +836,32 @@ def sql_fentan_log(billid, fen_type):
     if excute_sql(fms_db, fms_conn, sql_to_fentanlog) != 1:
             print("遇到异常")
             return 0
+def sql_to_liepei_ZONG_daijiesuan_bag(servercode,source):
+    '''
+    理赔总金额对账-实际
+    :param yd_number:
+    :param waybill_number:
+    :param customerCode:
+    :param transfertype:
+    :param servercode:
+    :param source:
+    :return:
+    '''
+    billid = sql_to_lipei_settlement(servercode, checkpattern="A",check_type="C")
+    hawbcode_list = hawbcode = request_lipei_with_bag(shipper_list,servercode,source)
+    for haocode in hawbcode_list:
+        sql_lipei_bsn_realte = "INSERT INTO `fms_db_now`.`claims_reconcile_amount_bsnrelate`(`billId`, `bsId`, `hawbcode`, `createdon`, `createdby`) " \
+                               "VALUES (%s, 1, '%s', '%s', 651);"\
+                               %(billid,haocode,now())
+        if excute_sql(fms_db, fms_conn, sql_lipei_bsn_realte) != 1:
+            print("遇到异常")
+            return 0
+    sql_lipei_mingxi(billId=billid, hawbcode=hawbcode_list,ifmingxi=2)
+    sql_lipei_shenhe_fee(billId=billid,servercode=servercode, ifmingxi=2)
+    #sql_fentan_log(billid, fen_type="M")
+    data_to_asyncdata(billid=billid,servercode=servercode,BsnType="M", pattern="A")
+    data_leipei_to_fentan(billid, servercode)
+    return hawbcode_list
 def sql_to_liepei_ZONG_daijiesuan(yd_number,waybill_number,customerCode,transfertype,servercode,source):
     '''
     理赔总金额对账-实际
@@ -821,18 +947,11 @@ def lipei_jiesuan_yugu(yd_number,waybill_number, customerCode, transfertype, ser
         data = request_lipei(waybill_number+i, customerCode, transfertype, servercode, source)
         data_list.append(data)
     return data_list
-def lading_generate():
-    data=[]
-    ladings = [i for i in range(1000,9999)]
-    lading_number = random.choice(ladings)
-    if lading_number not in str(data):
-        data.append(lading_number)
-        ladings.pop(lading_number)
-    return lading_number
+
 if __name__=="__main__":
-    lading_index = 8821 #xxx-2040xxxx 提单序列号，避免重复
+    lading_index = lading_generate() #xxx-2040xxxx 提单序列号，避免重复
     waybill_number = random.randint(10000000,99999999) #运单序列号
-    bag_number = 2 #袋子数量
+    bag_number = 1 #袋子数量
     Charge_Weight = 1.188 #空运提单重量
     fee_number = 2 #空运提单费用个数  末端费用项个数
     yd_number= 5#运单数量
@@ -846,17 +965,18 @@ if __name__=="__main__":
     transport_type_code = "KC"  #运输方式(KC卡车、AN航空、WL快递)
     server_list = ["yif"]#,"TEST008""AB123","yif" #"5555555"发货中转
     chongpai_server = "TEST007"
+    bill_count=5
     #servercode =random.choice(server_list)
     CountryCode="MD"
     transit_country="MX"
     org_code="43"
     destination="CC"
     qg_servercode="MIX0144"#"YIFQG" #YIFQG YS
-    md_servercode="TEST008"
+    md_servercode="BJYWW"
     customerCode = "C00326"  # "C00326"  556273  C00092  556230 2 #客户代码-运单使用  #wt客户C02672 100001 C02621
     source = 1  # 系统来源 1 YT 2 WT
     lading_sum=1
-    car_sum=2
+    car_sum=1
     iffahuo=1
     ladingnumber=1 #提单数量
     servercode_diaobo="5555555"
@@ -865,6 +985,30 @@ if __name__=="__main__":
     data_list=[]
     servercode = random.choice(server_list)
     print(servercode)
+    bag_list, shipper_list, bag_shipper_list = data_bag_shipper_list(bag_number, waybill_number, customerCode, yt_number,servercode, transfertype, source)
+    #实际- 空运
+    lading_list = sql_to_airbill_fentan_bag(lading_sum, lading_index, bag_list, shipper_list, customerCode, Charge_Weight, servercode,currency, source)
+    #实际 - 理赔明细对账
+    sql_to_liepei_mingxi_daijiesuan_bag(shipper_list, servercode, source)
+    # #实际-理赔总金额对账
+    #sql_to_liepei_ZONG_daijiesuan_bag(servercode, source)
+    # # 实际-海外重派结算
+    sql_to_chongpai_daijiesuan_bag(customerCode=customerCode,if_pqm=0,servercode=servercode,source=source)
+    # 实际-调拨
+    sql_to_diaobobill_fentan_bag(lading_sum=lading_sum, bag_list=bag_shipper_list, shipper_list=shipper_list, if_pqm=1, transport_type_code=transport_type_code, servercode=servercode, source=source,currency=currency)
+    # 实际-中转
+    sql_to_carbill_fentan_bag(car_sum, car_number, bag_list, CountryCode, transit_country, customerCode, servercode,source, if_pqm=0, iffahuo=1)
+    #实际-发货中转
+    sql_to_fhzzbill_fentan_bag(lading_sum, org_code, destination, bag_list, shipper_list, Charge_Weight, fh_servercode,if_pqm=1, source=source)
+    #实际-清关提单
+    sql_to_qgbill_fentan_bag(lading_number=lading_sum, bag_list=bag_list, shipper_list=shipper_list, qg_servercode=qg_servercode, customerCode=customerCode,if_vat=0,source=source)
+    # 实际-清关明细
+    #sql_to_qgydbill_fentan_bag(lading_number=lading_sum, qg_servercode=qg_servercode, customerCode=customerCode, source=source)
+    # 实际-末端明细
+    #sql_to_MDYD_daijiesuan_bag(shipper_code_list=shipper_list, servercode=md_servercode)
+    # 实际-末端提单
+    sql_to_MDlading_daijiesuan_bag(lading_list, md_servercode)
+    '''单独环节'''
     #理赔预估费用插入
     #lipei_jiesuan_yugu(yd_number=yt_number, waybill_number=waybill_number, customerCode=customerCode, transfertype=transfertype, servercode=servercode, source=source)
     # #实际-理赔明细对账
@@ -879,7 +1023,7 @@ if __name__=="__main__":
     #sql_to_MDYD_daijiesuan(yd_number, waybill_number, customerCode, transfertype, servercode, source)
 
     # 实际-空运
-    #sql_to_airbill_fentan(lading_sum, lading_index, bag_number, waybill_number, customerCode, Charge_Weight, yt_number,fee_number, servercode, transfertype, ifotherfee, source)
+    #sql_to_airbill_fentan(lading_sum, lading_index, bag_number, waybill_number, customerCode, Charge_Weight, yt_number,fee_number, servercode, transfertype, ifotherfee,currency, source)
 
     # 实际-卡车
     #sql_to_carbill_fentan(car_sum, car_number, CountryCode, transit_country, bag_number, waybill_number, customerCode,yt_number, servercode, transfertype, source, iffahuo=1)
@@ -889,7 +1033,7 @@ if __name__=="__main__":
     # 实际-清关提单对账单生成
     #sql_to_qgbill_fentan(lading_number=1, lading_index=lading_index, bag_number=bag_number, servercode=servercode, qg_servercode=qg_servercode, waybill_number=waybill_number,customerCode=customerCode, Charge_Weight=Charge_Weight, yt_number=yt_number, fee_number=fee_number, transfertype=transfertype, ifotherfee=ifotherfee, source=source)
     # 实际-清关运单对账单生成
-    # sql_to_qgydbill_fentan(lading_number=1, lading_index=lading_index, bag_number=bag_number, servercode=servercode, qg_servercode=qg_servercode, waybill_number=waybill_number,customerCode=customerCode, Charge_Weight=Charge_Weight, yt_number=yt_number, fee_number=fee_number, transfertype=transfertype, ifotherfee=ifotherfee, source=source)
+    #sql_to_qgydbill_fentan(lading_number=1, lading_index=lading_index, bag_number=bag_number, servercode=servercode, qg_servercode=qg_servercode, waybill_number=waybill_number,customerCode=customerCode, Charge_Weight=Charge_Weight, yt_number=yt_number, fee_number=fee_number, transfertype=transfertype, ifotherfee=ifotherfee, source=source)
 
     # 预估-发货中转
     #fahuo_jiesuan_yugu(fahuo_number=1,org_code=org_code,destination=destination,box=bag_number,waybill_number=waybill_number,charge_weight=Charge_Weight,customerCode=customerCode,bill_count=2,servercode=fh_servercode,transfertype=transfertype,source=source,iffahuo=2)
@@ -904,6 +1048,6 @@ if __name__=="__main__":
     #sql_to_diaobobill_fentan(lading_sum=lading_sum, bag_number=bag_number, waybill_number=waybill_number, customerCode=customerCode, yt_number=yt_number, transfertype=transfertype,transport_type_code=transport_type_code,servercode=servercode, source=source,currency=currency)
 
     # 实际-末端运单对账单生成
-    sql_to_MDYD_daijiesuan(lading_number=1, lading_index=lading_index, bag_number=bag_number, waybill_number=waybill_number, customerCode=customerCode, Charge_Weight=Charge_Weight,yt_number=yt_number, fee_number=fee_number, servercode=servercode, transfertype=transfertype, ifotherfee=ifotherfee, source=source)
+    #sql_to_MDYD_daijiesuan(lading_number=1, lading_index=lading_index, bag_number=bag_number, waybill_number=waybill_number, customerCode=customerCode, Charge_Weight=Charge_Weight,yt_number=yt_number, fee_number=fee_number, servercode=servercode, transfertype=transfertype, ifotherfee=ifotherfee, source=source)
     # 实际-末端提单对账
     #sql_to_MDlading_daijiesuan(lading_number=1,md_servercode=md_servercode, lading_index=lading_index, bag_number=bag_number, waybill_number=waybill_number, customerCode=customerCode, Charge_Weight=Charge_Weight,yt_number=yt_number, fee_number=fee_number, servercode=servercode, transfertype=transfertype, ifotherfee=ifotherfee, source=source)

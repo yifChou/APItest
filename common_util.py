@@ -38,31 +38,32 @@ def md5_32_upper(str):
     return str_md5
 def new_txt():
     file_name = "lading_number"+y_m_d()+".txt"
-    with open(file_name, "w") as txt:
+    with open(file_name, "a") as txt:
         txt.close()
     return file_name
-def lading_generate(file_name):
-    '''随机生成4位不重复的数值'''
 
-    #print(file_name)
+def lading_generate():
+    '''随机生成4位不重复的数值'''
     try:
-        with open(file_name,"a+") as f:
+        file_name = "lading_number" + y_m_d() + ".txt"
+        with open(file_name, "a") as txt:
+            txt.close()
+        with open(file_name,"r+") as f:
             data = f.readlines()
             # for i in data:
             #     print(i)
-            lading_number = random.randint(10,99)
+            lading_number = random.randint(1000,9999)
             #print("txt",str(data))
             #print(str(ladings))
             if str(lading_number) not in str(data):
                 f.writelines(str(lading_number)+"\n")
                 return lading_number
             else:
-                lading_generate(file_name)
-                return random.randint(10000,99999)
+                return lading_generate()
     except Exception as e:
         print(e,"生成单号重复多次")
         return random.randint(10000, 99999)
 if __name__=="__main__":
+    #file_name = new_txt()
     for i in range(10):
-        file_name = new_txt()
-        print(lading_generate(file_name))
+        print(lading_generate())
