@@ -5,7 +5,7 @@ class url:
     crm_url = "http://crmservice.dev.yunexpress.com" #本地 "http://10.168.95.114:5000" 开发环境 http://10.168.95.192:5000 #http://crmservice.dev.yunexpress.com
     pqm_url = "http://192.168.88.116:5000/" #开发环境
     #ProductCode=["ABC"] #["PK0461","ZH20207","USZMTK","XYLXB","1103"] 产品代码
-    ProductCode=["1103"]#"PK0442","PK0461","ZH20207","USZMTK","1103","ABC","XYLXB","EUB-SZ",
+    ProductCode=["DE-TEST"]#"PK0442","PK0461","ZH20207","USZMTK","1103","ABC","XYLXB","EUB-SZ",
     # 中转结算产品 "001003"
     # 理赔 "DE-TEST"
     # 海外重派 发货中转 "PK0442"

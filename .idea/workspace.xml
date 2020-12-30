@@ -19,11 +19,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d13fba23-a025-4eeb-be36-f9c656b66603" name="Default Changelist" comment="指定袋子关联不同环境的数据，并生成对账单">
+    <list default="true" id="d13fba23-a025-4eeb-be36-f9c656b66603" name="Default Changelist" comment="同个运单做多个环节的数据">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FMS_settlement.py" beforeDir="false" afterPath="$PROJECT_DIR$/FMS_settlement.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fee_data_pqm.py" beforeDir="false" afterPath="$PROJECT_DIR$/fee_data_pqm.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/request_fms.py" beforeDir="false" afterPath="$PROJECT_DIR$/request_fms.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -91,7 +90,7 @@
       <recent name="C:\Users\Administrator\PycharmProjects\APItest" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.FMS_settlement">
+  <component name="RunManager" selected="Python.request_fms">
     <configuration name="FMS_settlement" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="APItest" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -201,8 +200,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.FMS_settlement" />
         <item itemvalue="Python.request_fms" />
+        <item itemvalue="Python.FMS_settlement" />
         <item itemvalue="Python.test1" />
         <item itemvalue="Python.common_util" />
         <item itemvalue="Python.newcode" />
@@ -413,7 +412,14 @@
       <option name="project" value="LOCAL" />
       <updated>1608890027251</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="同个运单做多个环节的数据">
+      <created>1609314462991</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1609314462991</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -437,7 +443,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="rter" />
     <MESSAGE value="指定袋子关联不同环境的数据，并生成对账单" />
-    <option name="LAST_COMMIT_MESSAGE" value="指定袋子关联不同环境的数据，并生成对账单" />
+    <MESSAGE value="同个运单做多个环节的数据" />
+    <option name="LAST_COMMIT_MESSAGE" value="同个运单做多个环节的数据" />
   </component>
   <component name="WindowStateProjectService">
     <state x="690" y="306" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1608629585031">
@@ -452,46 +459,46 @@
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
     <state x="738" y="291" key="FileChooserDialogImpl/0.40.1920.1040@0.40.1920.1040" timestamp="1608804315219" />
-    <state width="1899" height="209" key="GridCell.Tab.0.bottom" timestamp="1609313905102">
+    <state width="1899" height="182" key="GridCell.Tab.0.bottom" timestamp="1609323388570">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1899" height="209" key="GridCell.Tab.0.bottom/0.40.1920.1040@0.40.1920.1040" timestamp="1609313905102" />
-    <state width="1899" height="209" key="GridCell.Tab.0.center" timestamp="1609313905102">
+    <state width="1899" height="182" key="GridCell.Tab.0.bottom/0.40.1920.1040@0.40.1920.1040" timestamp="1609323388570" />
+    <state width="1899" height="182" key="GridCell.Tab.0.center" timestamp="1609323388570">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1899" height="209" key="GridCell.Tab.0.center/0.40.1920.1040@0.40.1920.1040" timestamp="1609313905102" />
-    <state width="1899" height="209" key="GridCell.Tab.0.left" timestamp="1609313905102">
+    <state width="1899" height="182" key="GridCell.Tab.0.center/0.40.1920.1040@0.40.1920.1040" timestamp="1609323388570" />
+    <state width="1899" height="182" key="GridCell.Tab.0.left" timestamp="1609323388569">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1899" height="209" key="GridCell.Tab.0.left/0.40.1920.1040@0.40.1920.1040" timestamp="1609313905102" />
-    <state width="1899" height="209" key="GridCell.Tab.0.right" timestamp="1609313905102">
+    <state width="1899" height="182" key="GridCell.Tab.0.left/0.40.1920.1040@0.40.1920.1040" timestamp="1609323388569" />
+    <state width="1899" height="182" key="GridCell.Tab.0.right" timestamp="1609323388570">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1899" height="209" key="GridCell.Tab.0.right/0.40.1920.1040@0.40.1920.1040" timestamp="1609313905102" />
-    <state width="1899" height="413" key="GridCell.Tab.1.bottom" timestamp="1609134928467">
+    <state width="1899" height="182" key="GridCell.Tab.0.right/0.40.1920.1040@0.40.1920.1040" timestamp="1609323388570" />
+    <state width="1899" height="413" key="GridCell.Tab.1.bottom" timestamp="1609316072003">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1899" height="413" key="GridCell.Tab.1.bottom/0.40.1920.1040@0.40.1920.1040" timestamp="1609134928467" />
-    <state width="1899" height="413" key="GridCell.Tab.1.center" timestamp="1609134928466">
+    <state width="1899" height="413" key="GridCell.Tab.1.bottom/0.40.1920.1040@0.40.1920.1040" timestamp="1609316072003" />
+    <state width="1899" height="413" key="GridCell.Tab.1.center" timestamp="1609316072003">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1899" height="413" key="GridCell.Tab.1.center/0.40.1920.1040@0.40.1920.1040" timestamp="1609134928466" />
-    <state width="1899" height="413" key="GridCell.Tab.1.left" timestamp="1609134928466">
+    <state width="1899" height="413" key="GridCell.Tab.1.center/0.40.1920.1040@0.40.1920.1040" timestamp="1609316072003" />
+    <state width="1899" height="413" key="GridCell.Tab.1.left" timestamp="1609316072003">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1899" height="413" key="GridCell.Tab.1.left/0.40.1920.1040@0.40.1920.1040" timestamp="1609134928466" />
-    <state width="1899" height="413" key="GridCell.Tab.1.right" timestamp="1609134928467">
+    <state width="1899" height="413" key="GridCell.Tab.1.left/0.40.1920.1040@0.40.1920.1040" timestamp="1609316072003" />
+    <state width="1899" height="413" key="GridCell.Tab.1.right" timestamp="1609316072003">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1899" height="413" key="GridCell.Tab.1.right/0.40.1920.1040@0.40.1920.1040" timestamp="1609134928467" />
+    <state width="1899" height="413" key="GridCell.Tab.1.right/0.40.1920.1040@0.40.1920.1040" timestamp="1609316072003" />
     <state x="623" y="234" width="983" height="779" key="SettingsEditor" timestamp="1608799244504">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
     <state x="623" y="234" width="983" height="779" key="SettingsEditor/0.40.1920.1040@0.40.1920.1040" timestamp="1608799244504" />
-    <state x="563" y="294" key="Vcs.Push.Dialog.v2" timestamp="1608890030098">
+    <state x="563" y="294" key="Vcs.Push.Dialog.v2" timestamp="1609314465562">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state x="563" y="294" key="Vcs.Push.Dialog.v2/0.40.1920.1040@0.40.1920.1040" timestamp="1608890030098" />
+    <state x="563" y="294" key="Vcs.Push.Dialog.v2/0.40.1920.1040@0.40.1920.1040" timestamp="1609314465562" />
     <state x="623" y="265" width="672" height="678" key="search.everywhere.popup" timestamp="1607420383671">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>

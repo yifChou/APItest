@@ -984,7 +984,7 @@ if __name__=="__main__":
     fh_servercode="5555555"
     currency="RMB"
     data_list=[]
-    if_yichang = 10  # 0则用新的提单和运单
+    if_yichang = 0  # 0则用新的提单和运单
     server_list = ["kenny_code"]#, "kenny_code","yif"
     servercode = random.choice(server_list)
     print(servercode)

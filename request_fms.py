@@ -548,44 +548,44 @@ def request_car_fee_withoutbag(car_number,CountryCode,transit_country,customerCo
         fee_to_zhuanyun(Car_Number=car_data["car_number"],Waybill_Code=car_data["virtual_number"],Server_Code=servercode,source=source,Charge_Weight=car_data["chargeable_weight"],Start_Place=CountryCode,end_Place=transit_country,BusinessTime=now_T())
         return car_data["car_number"]
     elif source==2:
-        fee_to_wt(waybill_code=car_data["virtual_number"],huan_jie="ZY",source=source)
+        #fee_to_wt(waybill_code=car_data["virtual_number"],huan_jie="ZY",source=source)
         #customerCode = "100001"  # 100001  C02672
-        # fee_code_list =["TT","A4"]
-        # request_data= []
-        # for fee_code in fee_code_list:
-        #     data = {
-        #     "Waybill_Code": car_data["virtual_number"],
-        #     "Customer_Code": customerCode,
-        #     "express_sallerid": "",
-        #     "business_ownership": "WWW",
-        #     "Product_Code": "FDXGR-CA",
-        #     "Product_Name": "美国快线GR美西（单件服务）",
-        #     "Fee_Code": fee_code,
-        #     "Fee_Name": "速递运费",
-        #     "Arrival_Date": now_T(),
-        #     "Fee_Expense_Time": now_T(),
-        #     "Zone_Code": "US",
-        #     "Zone_Name": "邮编分区",
-        #     "Price_Value": random.randint(10,99),
-        #     "Price_Total_Value": random.randint(10,99),
-        #     "Currency": "RMB",
-        #     "system_source": "WT",
-        #     "Fk_type": "N",
-        #     "calculate_unit": "kg",
-        #     "note": "",
-        #     "income_type": "ZY",
-        #     "price_level":random.randint(1,3),
-        #     "Charge_Weight":random.randint(1000,9999)+random.random()
-        #     }
-        #     request_data.append(data)
-        # request_url = url.fms + "/api/BillIncomeFee/CreateBillIncomeFee"
-        # print(request_url)
-        # data = requests.post(url=request_url, json=request_data).text
-        # if eval(data)["message"] == "成功":
-        #     print("WT中转费用推送fms成功！！！", request_data)
-        #     return car_data["car_number"]
-        # else:
-        #     print("WT中转费用推送fms失败", request_url, data, request_data)
+        fee_code_list =["TT","A4"]
+        request_data= []
+        for fee_code in fee_code_list:
+            data = {
+            "Waybill_Code": car_data["virtual_number"],
+            "Customer_Code": customerCode,
+            "express_sallerid": "",
+            "business_ownership": "WWW",
+            "Product_Code": "FDXGR-CA",
+            "Product_Name": "美国快线GR美西（单件服务）",
+            "Fee_Code": fee_code,
+            "Fee_Name": "速递运费",
+            "Arrival_Date": now_T(),
+            "Fee_Expense_Time": now_T(),
+            "Zone_Code": "US",
+            "Zone_Name": "邮编分区",
+            "Price_Value": random.randint(10,99),
+            "Price_Total_Value": random.randint(10,99),
+            "Currency": "RMB",
+            "system_source": "WT",
+            "Fk_type": "N",
+            "calculate_unit": "kg",
+            "note": "",
+            "income_type": "ZY",
+            "price_level":random.randint(1,3),
+            "Charge_Weight":random.randint(1000,9999)+random.random()
+            }
+            request_data.append(data)
+        request_url = url.fms + "/api/BillIncomeFee/CreateBillIncomeFee"
+        print(request_url)
+        data = requests.post(url=request_url, json=request_data).text
+        if eval(data)["message"] == "成功":
+            print("WT中转费用推送fms成功！！！", request_data)
+            return car_data["car_number"]
+        else:
+            print("WT中转费用推送fms失败", request_url, data, request_data)
 def request_car_fee(car_number,CountryCode,transit_country,bag_number,waybill_number,customerCode,yt_number,servercode,transfertype,source,iffahuo):
     car_data = request_car(car_number,CountryCode,transit_country,bag_number,waybill_number,customerCode,yt_number,servercode,transfertype,source,iffahuo)
     if source==1:
@@ -1136,44 +1136,44 @@ def request_airlading_fee_withoutbag(lading_index,customerCode,Charge_Weight,ser
         fee_to_pqm(lading_number=lading_number, Charge_Weight=Charge_Weight, Volume_Weight=volume_weight,AirService_type="KY")
         return lading_number
     elif source==2:
-        fee_to_wt(waybill_code=lading_number, huan_jie="KY", source=source)
-        # Product_Code=random.choice(['DHL-NL','FDXGR-CA'])
-        # request_data = []
-        # fee_code_list=["A8","A4","F9"]
-        # for fee_code in fee_code_list:
-        #     data = {
-        #     "Waybill_Code": lading_number,
-        #     "Customer_Code": customerCode,
-        #     "express_sallerid": "",
-        #     "business_ownership": "WWW",
-        #     "Product_Code": Product_Code,
-        #     "Product_Name": "美国快线GR美西(随便不用校验)",
-        #     "Fee_Code": fee_code,
-        #     "Fee_Name": "速递运费",
-        #     "Arrival_Date": now_T(),
-        #     "Fee_Expense_Time": now_T(),
-        #     "Zone_Code": "US",
-        #     "Zone_Name": "邮编分区",
-        #     "Price_Value": 16.0,
-        #     "Price_Total_Value": 16.0,
-        #     "Currency": "RMB",
-        #     "system_source": "WT",
-        #     "Fk_type": "N",
-        #     "calculate_unit": "kg",
-        #     "note": "",
-        #     "income_type":"KY",
-        #     "price_level":random.randint(1,3),
-        #     "Charge_Weight":3.69
-        #     }
-        #     request_data.append(data)
-        # request_url = url.fms+"/api/BillIncomeFee/CreateBillIncomeFee"
-        # print(request_url)
-        # data = requests.post(url=request_url, json=request_data).text
-        # if eval(data)["message"] == "成功":
-        #     print("WT空运费用推送fms成功！！！",request_data)
-        #     return lading_number
-        # else:
-        #     print("WT空运费用推送fms失败", request_url,data, request_data)
+        #fee_to_wt(waybill_code=lading_number, huan_jie="KY", source=source)
+        Product_Code=random.choice(['DHL-NL','FDXGR-CA'])
+        request_data = []
+        fee_code_list=["A8","A4","F9"]
+        for fee_code in fee_code_list:
+            data = {
+            "Waybill_Code": lading_number,
+            "Customer_Code": customerCode,
+            "express_sallerid": "",
+            "business_ownership": "WWW",
+            "Product_Code": Product_Code,
+            "Product_Name": "美国快线GR美西(随便不用校验)",
+            "Fee_Code": fee_code,
+            "Fee_Name": "速递运费",
+            "Arrival_Date": now_T(),
+            "Fee_Expense_Time": now_T(),
+            "Zone_Code": "US",
+            "Zone_Name": "邮编分区",
+            "Price_Value": 16.0,
+            "Price_Total_Value": 16.0,
+            "Currency": "RMB",
+            "system_source": "WT",
+            "Fk_type": "N",
+            "calculate_unit": "kg",
+            "note": "",
+            "income_type":"KY",
+            "price_level":random.randint(1,3),
+            "Charge_Weight":3.69
+            }
+            request_data.append(data)
+        request_url = url.fms+"/api/BillIncomeFee/CreateBillIncomeFee"
+        print(request_url)
+        data = requests.post(url=request_url, json=request_data).text
+        if eval(data)["message"] == "成功":
+            print("WT空运费用推送fms成功！！！",request_data)
+            return lading_number
+        else:
+            print("WT空运费用推送fms失败", request_url,data, request_data)
 def request_customer_withoutbag(data,servercode,customerCode,source=1):
     '''
     清关提单接口成功后执行清关和袋子接口
@@ -2447,7 +2447,7 @@ if __name__ == "__main__":
     bill_count=1
     currency="RMB"
     data_list=[]
-    for i in range(10):
+    for i in range(1):
         print("第%s个提单："%(i+1))
         lading_index = lading_generate()
         servercode = random.choice(server_list)
@@ -2477,7 +2477,7 @@ if __name__ == "__main__":
         #request_car(str(lading_index), bag_number=3,source=1)
         #data = request_yt(waybill_number+i,customerCode,transfertype,servercode,0,source)
         #WT 末端
-        #data = request_yt(waybill_number + i, customerCode=wt_customerCode, transfertype=transfertype, servercode=servercode, source=2)
+        #data = request_yt(waybill_number + i, customerCode=wt_customerCode, transfertype=transfertype, servercode=servercode,if_pqm=0, source=2)
         #WT 空运
         #data = request_airlading_fee_withoutbag(lading_index = str(lading_index+i), customerCode=wt_customerCode, Charge_Weight=Charge_Weight, servercode=servercode, source=2)
         # WT 清关
