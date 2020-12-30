@@ -418,7 +418,7 @@ def fee_to_chongpai(Waybill_Code,Customer_Code,ServerPlace_Code,serverCode,db_ti
 }
     request_data ={
   "jsonstring": json.dumps(data,ensure_ascii=False),
-  "waybill_code": Waybill_Code["shipperCode"],
+  "waybill_code": Waybill_Code["shipperCode"]+"-1",
   "system_source": source,
   "cost_type":"PS"
 }

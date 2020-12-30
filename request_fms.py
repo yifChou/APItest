@@ -48,12 +48,17 @@ def data_yt(waybill_number,customerCode,transfertype,servercode,source):
         #"TEST008":[],
         "yif":url.yifserverchannelcode,#"GZYJ","SPLUSZ"
         "AB123":url.AB123serverchannelcode,#"HERMES","ABCZ"
-        "5555555": url.fiveserverchannelcode
+        "5555555": url.fiveserverchannelcode,
+        "kenny_code": url.yifserverchannelcode,
+        "BJYWW":url.yifserverchannelcode
     }
     if servercode not in serverchannelcode_dict.keys():
         print("服务商不存在，请确认")
         return 0
-    ProductCode = url.ProductCode #["PK0461","ZH20207","USZMTK","XYLXB","1103"]
+    if source==1:
+        ProductCode = url.ProductCode #["PK0461","ZH20207","USZMTK","XYLXB","1103"]
+    else:
+        ProductCode = url.wt_ProductCode
     #ProductCode = ["PK0001", "PK0002", "PK0003", "PK0031", "PK0034", "PK0347", "PK0351"]
     '''中转状态(S正常走货,X国外销毁,T未收安检退件(退全款),C国外重派,I国外退件(不退款),V已收未出国退件(只退运费,收挂号费))'''
     TransferstatusType =["S","X","T","C","I","V"]
@@ -181,8 +186,105 @@ def yingshou_fee(shippercode,MDservercode,currency):
         print("应付费用推送fms成功！！！", request_data)
     else:
         print("应付费用推送fms失败", request_url, data, request_data)
+def yt_yingshou_fee(Waybill_Code,customercode,currency,source):
+    if source ==1:
+        source="YT"
+    else:
+        source="WT"
+    request_data =[]
+    fee_code_list = ["E1","QQ"]
+    for fee_code in fee_code_list:
+        data = {
+            "Waybill_Code": Waybill_Code,
+            "Fee_Code": fee_code,
+            "Fee_Name": "AUTO_FEE",
+            "Fee_Expense_Time": now(),
+            "Zone_Code": 1,
+            "Zone_Name": "美国",
+            "Price_Total_Value": random.randint(10,99)+random.random(),
+            "Currency": currency,
+            "system_source": str(source),
+            "Fk_type": "N",
+            "calculate_unit": "KG",
+            "note": "",
+            "income_type": "PS",
+            "price_level": "1",
+            "Customer_Code": customercode,
+            "Charge_Weight": 5.0
+        }
+        request_data.append(data)
+    request_url = url.fms + "/api/BillIncomeFee/CreateBillIncomeFee"
+    data = requests.post(url=request_url, json=request_data).text
+    print(request_url, "结果" + data)
+    if "成功" in data:
+        print("运单应收费用推送fms成功！！！")
+        print(request_data)
+    else:
+        print("运单应收费用推送fms失败:", data, request_url, request_data)
+def yt_yingfu_fee(Waybill_Code,Server_code,source):
+    if source ==1:
+        source="YT"
+    else:
+        source="WT"
+    fee_data =[]
+    fee_code_list = ["E2","L3"]
+    for fee_code in fee_code_list:
+        data = {
+		"Fk_code": fee_code,
+		"Unit_code": "KG",
+		"Ic_amount": 5.0,
+		"Currency_code": "RMB",
+		"Id_zoneid": 99,
+		"Ic_currencyrate": 1.11,
+		"Note": "备注"
+	}
+        fee_data.append(data)
+    request_data = {
+            "Waybill_Code": Waybill_Code,
+            "Server_Type": "PS",
+            "Server_Id": Server_code,
+            "Id_OccurDate": now(),
+            "Charge_Weight": 1.852,
+            "Charge_Weight_Unit": 0.0,
+            "System_Source": source,
+            "feeDetails": fee_data
+        }
+    request_url = url.fms + "/api/EndFee/CreateEndFee"
+    data = requests.post(url=request_url, json=request_data).text
+    print(request_url, "结果" + data)
+    if "成功" in data:
+        print("运单应付费用推送fms成功！！！")
+        print(request_data)
+    else:
+        print("运单应付费用推送fms失败:", data, request_url, request_data)
+def fee_to_wt(waybill_code,huan_jie,source):
+    '''
+    :param waybill_code:
+    :param huan_jie: KY 空运  ZY 转运 MD 末端
+    :param source:
+    :return:
+    '''
+    if source==1:
+        system_source="YT"
+    else:
+        system_source = "WT"
+    request_data ={
+	"waybill_code": waybill_code,
+	"jsonstring": "{\"Waybill_Code\":\""+waybill_code+"\",\"Currency_Code\":\"YD\",\"Customer_Code\":\"AUTO-CUSTO\",\"Product_Code\":\"PK0029\",\"Server_Code\":\"\",\"Server_Type\":\"PS\",\"ServerPlace_Code\":\"\",\"System_Code\":\"YT\",\"Og_id_ChargeFirst\":\"YT-HQB-SZ\",\"Og_id_ChargeSecond\":\"\",\"Arrival_Date\":\"2020-12-14T19:50:08\",\"Country\":\"AR\",\"Postcode\":\"518000\",\"City\":\"005001\",\"Province\":\"005\",\"Charge_Weight\":5.0,\"Unit_Code\":\"KG\",\"Unit_Length\":\"CM\",\"Unit_Area\":null,\"Unit_Bulk\":null,\"Unit_Volume\":null,\"ExtraService\":\"ss\",\"ExtraService_Coefficient\":\"0.8\",\"Pieces\":5,\"Category_Code\":\"5\",\"Declared_Value\":0.8,\"Currency\":null,\"Tariff\":\"0.6\",\"Airline\":\"中国南方\",\"Departure_Airport\":\"宝安机场\",\"Destination_Airport\":\"伦敦机场\",\"Customs_Clearance_Port\":\"QHKA\",\"Start_Place\":\"MD\",\"end_Place\":\"MX\",\"Remark\":null,\"Ticket\":5,\"HS_Code\":5,\"Box_Number\":5,\"First_Long\":0.0,\"Two_Long\":0.0,\"Three_Long\":0.0,\"BusinessTime\":\"2020-12-14T19:50:08\",\"airline_two_code\":\"BR\",\"detailEntities\":null,\"Goods_Code\":null,\"IsFinalCharge\":false,\"ChargType\":null,\"HCustomsNumber\":0.0,\"MCustomsNumber\":0.0,\"LCustomsNumber\":0.0,\"HCargoValueNumber\":0.0,\"MCargoValueNumber\":0.0,\"LCargoValueNumber\":0.0,\"Charge_Volume\":5.0,\"Truck_Number\":1,\"Tray_Number\":1,\"TimeUnti\":\"Day\",\"TimeVaule\":5,\"TrackingNumber\":\"33P\"}",
+	"system_source": system_source,
+	"product_code": "LHR-CC-LVB",
+	"income_type": huan_jie
+}
+    request_url = "http://192.168.88.21:5000/api/BilJsoncharged/AddBilJsoncharged"
+    print(request_url)
+    data = requests.post(url=request_url, json=request_data).text
+    print(data)
+    if '"Code":0' in data:
+        print("WT计费数据推送PQM成功！！！", request_data)
+    else:
+        print("WT计费数据推送PQM失败", request_url, data, request_data)
 
-def request_yt(waybill_number,customerCode,transfertype,servercode,source):
+def request_yt(waybill_number,customerCode,transfertype,servercode,if_pqm,source):
     '''
     :param waybill_number: 运单序列号
     :param customerCode: 客户
@@ -190,19 +292,23 @@ def request_yt(waybill_number,customerCode,transfertype,servercode,source):
     :return:
     '''
     request_data = data_yt(waybill_number,customerCode,transfertype,servercode,source)
+    if source==2:
+        request_data["BsnEntity"]["ArrivalDate"]=y_m_d() + " 03:03:03"
     #print("请求数据：",request_data)
     yt_number = request_data["BsnEntity"]["ShipperCode"]
     request_url = url.fms + "api/WayBillBusiness/CreateWayBillBusiness"
     data = requests.post(url=request_url, json=request_data,headers=headers).text
     print(request_url,"结果"+data)
     # 派送费用-应付
-
-    fee_to_paisong(Waybill_Code=yt_number,ServerPlace_Code="TEST008",Server_Code="BJYWW",B_time= now_T())
+    if if_pqm:
+        fee_to_paisong(Waybill_Code=yt_number,ServerPlace_Code="TEST008",Server_Code="BJYWW",B_time= now_T())
+    else:
+        yt_yingfu_fee(Waybill_Code=yt_number, Server_code="BJYWW", source=source)
     # else:
     #     yingshou_fee(yt_number, MDservercode="BJYWW", currency=currency)
     # '''应收费用直接调用fms应收接口'''
     # yingshou_fee_code =["E1" ,"E2", "H5"]
-    # shipper_yingshou_fee(yt_number, customerCode, request_data["BsnEntity"]["ProductCode"], yingshou_fee_code)
+    #shipper_yingshou_fee(yt_number, customerCode, request_data["BsnEntity"]["ProductCode"], yingshou_fee_code)
     # return yt_number
     '''返点费用'''
     request_data = data_fandian_income(yt_number, source, customerCode)
@@ -222,45 +328,58 @@ def request_yt(waybill_number,customerCode,transfertype,servercode,source):
     else:
         print("应付返点推送fms失败", request_url, data, request_data)
     '''应收费用经过pqm'''
-    if eval(data)["message"] == "成功":
-        print("运单推送fms成功！！！")
-        print(request_data)
-        request_pqm_url = url.pqm_url + "api/FreightSellingCharge/JobCharge"
-        base_dict = {"Waybill_Code": yt_number, "Currency_Code": "YD", "Customer_Code": "AUTO-CUSTO",
-                     "Product_Code": "PK0029", "Server_Code": "", "Server_Type": "PS", "ServerPlace_Code": "",
-                     "System_Code": "YT", "Og_id_ChargeFirst": "YT-HQB-SZ", "Og_id_ChargeSecond": "",
-                     "Arrival_Date": now_T(), "Country": "AR", "Postcode": "518000", "City": "005001",
-                     "Province": "005", "Charge_Weight": 5.0, "Unit_Code": "KG", "Unit_Length": "CM", "Unit_Area": None,
-                     "Unit_Bulk": None, "Unit_Volume": None, "ExtraService": "ss", "ExtraService_Coefficient": "0.8",
-                     "Pieces": 5, "Category_Code": "5", "Declared_Value": 0.8, "Currency": None, "Tariff": "0.6",
-                     "Airline": "中国南方", "Departure_Airport": "宝安机场", "Destination_Airport": "伦敦机场",
-                     "Customs_Clearance_Port": "QHKA", "Start_Place": "MD", "end_Place": "MX", "Remark": None,
-                     "Ticket": 5,
-                     "HS_Code": 5, "Box_Number": 5, "First_Long": 0.0, "Two_Long": 0.0, "Three_Long": 0.0,
-                     "BusinessTime": now_T(), "airline_two_code": "BR", "detailEntities": None,
-                     "Goods_Code": None, "IsFinalCharge": False, "ChargType": None, "HCustomsNumber": 0.0,
-                     "MCustomsNumber": 0.0, "LCustomsNumber": 0.0, "HCargoValueNumber": 0.0, "MCargoValueNumber": 0.0,
-                     "LCargoValueNumber": 0.0, "Charge_Volume": 5.0, "Truck_Number": 1, "Tray_Number": 1,
-                     "TimeUnti": "Day",
-                     "TimeVaule": 5, "TrackingNumber": "33P"}
-        request_pqm_url_1 = url.pqm_url + "api/Income/AddBillJson"
-        json_data_1 = {
-            "id": 0,
-            "waybill_code": yt_number,
-            "jsonstring":json.dumps(base_dict, ensure_ascii=False),
-            "error_count": "",
-            "error_message": "",
-            "system_source": "YT",
-            "income_type":"PS"
-        }
-        data = requests.post(url=request_pqm_url_1, json=json_data_1).text
-        print(request_pqm_url_1, "结果" + data)
-        if "Code" in data:
-            print("运单推送PQM计费表成功！！！")
-            print(json_data_1)
-            return yt_number
+    if source==1:
+        if if_pqm:
+            if eval(data)["message"] == "成功":
+                print("运单推送fms成功！！！")
+                print(request_data)
+                request_pqm_url = url.pqm_url + "api/FreightSellingCharge/JobCharge"
+                base_dict = {"Waybill_Code": yt_number, "Currency_Code": "YD", "Customer_Code": "AUTO-CUSTO",
+                             "Product_Code": "PK0029", "Server_Code": "", "Server_Type": "PS", "ServerPlace_Code": "",
+                             "System_Code": "YT", "Og_id_ChargeFirst": "YT-HQB-SZ", "Og_id_ChargeSecond": "",
+                             "Arrival_Date": now_T(), "Country": "AR", "Postcode": "518000", "City": "005001",
+                             "Province": "005", "Charge_Weight": 5.0, "Unit_Code": "KG", "Unit_Length": "CM", "Unit_Area": None,
+                             "Unit_Bulk": None, "Unit_Volume": None, "ExtraService": "ss", "ExtraService_Coefficient": "0.8",
+                             "Pieces": 5, "Category_Code": "5", "Declared_Value": 0.8, "Currency": None, "Tariff": "0.6",
+                             "Airline": "中国南方", "Departure_Airport": "宝安机场", "Destination_Airport": "伦敦机场",
+                             "Customs_Clearance_Port": "QHKA", "Start_Place": "MD", "end_Place": "MX", "Remark": None,
+                             "Ticket": 5,
+                             "HS_Code": 5, "Box_Number": 5, "First_Long": 0.0, "Two_Long": 0.0, "Three_Long": 0.0,
+                             "BusinessTime": now_T(), "airline_two_code": "BR", "detailEntities": None,
+                             "Goods_Code": None, "IsFinalCharge": False, "ChargType": None, "HCustomsNumber": 0.0,
+                             "MCustomsNumber": 0.0, "LCustomsNumber": 0.0, "HCargoValueNumber": 0.0, "MCargoValueNumber": 0.0,
+                             "LCargoValueNumber": 0.0, "Charge_Volume": 5.0, "Truck_Number": 1, "Tray_Number": 1,
+                             "TimeUnti": "Day",
+                             "TimeVaule": 5, "TrackingNumber": "33P"}
+                request_pqm_url_1 = url.pqm_url + "api/Income/AddBillJson"
+                json_data_1 = {
+                    "id": 0,
+                    "waybill_code": yt_number,
+                    "jsonstring":json.dumps(base_dict, ensure_ascii=False),
+                    "error_count": "",
+                    "error_message": "",
+                    "system_source": "YT",
+                    "income_type":"PS"
+                }
+                if source==2:
+                    json_data_1["system_source"]="WT"
+                data = requests.post(url=request_pqm_url_1, json=json_data_1).text
+                print(request_pqm_url_1, "结果" + data)
+                if "Code" in data:
+                    print("运单推送PQM计费表成功！！！")
+                    print(json_data_1)
+                    return yt_number
+                else:
+                    print("运单推送PQM计费表失败:", data, request_pqm_url_1, json_data_1)
         else:
-            print("运单推送PQM计费表失败:", data, request_pqm_url_1, json_data_1)
+            yt_yingshou_fee(Waybill_Code=yt_number, customercode=customerCode, currency="RMB", source=source)
+            return yt_number
+    elif source==2:
+        '''WT末端应收费用'''
+        if if_pqm:
+            fee_to_wt(waybill_code=yt_number, huan_jie="MD", source=source)
+        else:
+            yt_yingshou_fee(Waybill_Code=yt_number, customercode=customerCode, currency="RMB", source=source)
         # json_data = {
         #     "billno": yt_number,
         #     "isPulsh": True,
@@ -279,9 +398,8 @@ def request_yt(waybill_number,customerCode,transfertype,servercode,source):
     else:
         print("运单推送fms失败:", data,request_url,request_data)
         return 0
-def data_car(car_number,CountryCode,transit_country,source):
+def data_car(car_number,CountryCode,transit_country,servicecode,source):
     car_code = ["YB", "GA", "JA", "GC"]
-    service_code = ["yif"]
     data = {
               "virtual_number":random.choice(car_code)+str(random.randint(10000,99999)) +time_str(),
               "car_number":random.choice(car_code) + "-"  + time_str() + str(car_number) +str(random.randint(1,9)),
@@ -300,7 +418,7 @@ def data_car(car_number,CountryCode,transit_country,source):
               "volume_unit": "VKG",
               "chargeable_unit": "CKG",
               "transit_unit": "LKG",
-              "service_code": random.choice(service_code),
+              "service_code": servicecode,
               "service_bodyId": 2,
               "og_bodyId": 25,
               "source_id": source,
@@ -371,7 +489,7 @@ def data_car_bag(virtual_number,car_number,bag_number,waybill_number,customerCod
             bag_list.append(bag["bag_labelcode"])
         data["BagItems"] = bag_list
         return data
-def data_car_fee(car_number,departure_number,ifoversea = 1):
+def data_car_fee(car_number,departure_number,servercode,ifoversea = 1):
     Fk_code = ["TT", "A8","B1", "B3"]  # 卡车中转费 TT  提货费 A8 其他费用:转口证B1 垫材费B3
     FK_code_dict = {
         "D4": "清关费",
@@ -400,7 +518,8 @@ def data_car_fee(car_number,departure_number,ifoversea = 1):
         "delivery_day": now(),
         "feeItems": fee_list,
         "price_number": 4, #	报价价格编号
-        "ptype": ifoversea #	订单类型(1海外中转2发货中转3调拨)
+        "ptype": ifoversea, #	订单类型(1海外中转2发货中转3调拨)
+        "server_code":servercode
     }
     print(data)
     return data
@@ -424,48 +543,55 @@ def request_diaobo_fee(bag_number,waybill_number,customerCode,yt_number,transfer
     # else:
     #     print(request_url,"调拨费用推送fms失败！！！",data,request_data)
 def request_car_fee_withoutbag(car_number,CountryCode,transit_country,customerCode,servercode,source):
-    car_data = request_car_withoutbag(car_number,CountryCode,transit_country,customerCode,source)
+    car_data = request_car_withoutbag(car_number,CountryCode,transit_country,customerCode,servercode,source)
     if source==1:
         fee_to_zhuanyun(Car_Number=car_data["car_number"],Waybill_Code=car_data["virtual_number"],Server_Code=servercode,source=source,Charge_Weight=car_data["chargeable_weight"],Start_Place=CountryCode,end_Place=transit_country,BusinessTime=now_T())
         return car_data["car_number"]
     elif source==2:
+        fee_to_wt(waybill_code=car_data["virtual_number"],huan_jie="ZY",source=source)
         #customerCode = "100001"  # 100001  C02672
-        request_data = [{
-            "Waybill_Code": car_data["virtual_number"],
-            "Customer_Code": customerCode,
-            "express_sallerid": "",
-            "business_ownership": "WWW",
-            "Product_Code": "FDXGR-CA",
-            "Product_Name": "美国快线GR美西（单件服务）",
-            "Fee_Code": "A4",
-            "Fee_Name": "速递运费",
-            "Arrival_Date": now_T(),
-            "Fee_Expense_Time": now_T(),
-            "Zone_Code": "US",
-            "Zone_Name": "邮编分区",
-            "Price_Value": random.randint(10,99),
-            "Price_Total_Value": random.randint(10,99),
-            "Currency": "RMB",
-            "system_source": "WT",
-            "Fk_type": "N",
-            "calculate_unit": "kg",
-            "note": "",
-            "income_type": "ZY"
-        }]
-        request_url = url.fms + "/api/BillIncomeFee/CreateBillIncomeFee"
-        print(request_url)
-        data = requests.post(url=request_url, json=request_data).text
-        if eval(data)["message"] == "成功":
-            print("WT中转费用推送fms成功！！！", request_data)
-            return car_data["car_number"]
-        else:
-            print("WT中转费用推送fms失败", request_url, data, request_data)
+        # fee_code_list =["TT","A4"]
+        # request_data= []
+        # for fee_code in fee_code_list:
+        #     data = {
+        #     "Waybill_Code": car_data["virtual_number"],
+        #     "Customer_Code": customerCode,
+        #     "express_sallerid": "",
+        #     "business_ownership": "WWW",
+        #     "Product_Code": "FDXGR-CA",
+        #     "Product_Name": "美国快线GR美西（单件服务）",
+        #     "Fee_Code": fee_code,
+        #     "Fee_Name": "速递运费",
+        #     "Arrival_Date": now_T(),
+        #     "Fee_Expense_Time": now_T(),
+        #     "Zone_Code": "US",
+        #     "Zone_Name": "邮编分区",
+        #     "Price_Value": random.randint(10,99),
+        #     "Price_Total_Value": random.randint(10,99),
+        #     "Currency": "RMB",
+        #     "system_source": "WT",
+        #     "Fk_type": "N",
+        #     "calculate_unit": "kg",
+        #     "note": "",
+        #     "income_type": "ZY",
+        #     "price_level":random.randint(1,3),
+        #     "Charge_Weight":random.randint(1000,9999)+random.random()
+        #     }
+        #     request_data.append(data)
+        # request_url = url.fms + "/api/BillIncomeFee/CreateBillIncomeFee"
+        # print(request_url)
+        # data = requests.post(url=request_url, json=request_data).text
+        # if eval(data)["message"] == "成功":
+        #     print("WT中转费用推送fms成功！！！", request_data)
+        #     return car_data["car_number"]
+        # else:
+        #     print("WT中转费用推送fms失败", request_url, data, request_data)
 def request_car_fee(car_number,CountryCode,transit_country,bag_number,waybill_number,customerCode,yt_number,servercode,transfertype,source,iffahuo):
     car_data = request_car(car_number,CountryCode,transit_country,bag_number,waybill_number,customerCode,yt_number,servercode,transfertype,source,iffahuo)
     if source==1:
         #fee_to_zhuanyun(Car_Number=car_data[0]["car_number"],Waybill_Code=car_data[0]["virtual_number"],Server_Code=servercode,source=source,Charge_Weight=car_data[0]["chargeable_weight"],Start_Place=CountryCode,end_Place=transit_country,BusinessTime=now_T())
         ifoversea=1
-        request_data = data_car_fee(car_number=car_data[0]["car_number"],departure_number=car_data[0]["virtual_number"], ifoversea=ifoversea)
+        request_data = data_car_fee(car_number=car_data[0]["car_number"],departure_number=car_data[0]["virtual_number"],servercode=servercode, ifoversea=ifoversea)
         data = requests.post(url=url.fms + "/api/TransferFee/CreateTransferFee", json=request_data).text
         print(request_data)
         if eval(data)["message"] == "成功":
@@ -562,19 +688,23 @@ def request_car_bag(virtual_number,car_number,bag_number,waybill_number,customer
             return bag_list
         else:
             print("发货中转和袋子关系推送fms失败")
-def request_car_withoutbag(data,CountryCode,transit_country,customerCode,source):
+def request_car_withoutbag(data,CountryCode,transit_country,customerCode,servercode,source):
     '''
         空运提单接口成功后执行提单和袋子接口
         :param data: xxx-2020+0904
         :return:
         '''
-    request_data = data_car(data,CountryCode,transit_country,source)
+    request_data = data_car(data,CountryCode,transit_country,servercode,source)
     if source ==2:
         print("WT中转-----------------------------------")
+        customer=get_customer_all(customerCode=customerCode,source=source)
         #customerCode = "100001"  # 100001  C02672
-        request_data["customer_code"] = customerCode
-        request_data["customer_name"] = "WT客户名称_脚本中转"
-        request_data["productCode"] = "WT_Productcode_ZZ"
+        productCode = random.choice(["DHL-NL", "FDXGR-CA"])
+        request_data["customer_code"]=customer["customer_code"]
+        request_data["customer_name"]=customer["customer_shortname"]
+        request_data["productCode"]=productCode
+        request_data["customer_bodyId"] = customer["customer_bodyid"]
+        request_data["departure_time"]=y_m_d() +  " 01:01:01"
     data = requests.post(url=url.fms + "api/Transfer/CreateTransfer", json=request_data).text
     # print(data)
     if eval(data)["message"] == "成功":
@@ -584,13 +714,13 @@ def request_car_withoutbag(data,CountryCode,transit_country,customerCode,source)
     else:
         print("中转卡车推送fms失败:", data)
         return 0
-def request_car_with_bag_fee(data,CountryCode,transit_country,bag_list,customerCode,source,if_pqm,iffahuo):
+def request_car_with_bag_fee(data,CountryCode,transit_country,bag_list,customerCode,servercode,source,if_pqm,iffahuo):
     '''
         空运提单接口成功后执行提单和袋子接口
         :param data: xxx-2020+0904
         :return:
         '''
-    request_data = data_car(data,CountryCode,transit_country,source)
+    request_data = data_car(data,CountryCode,transit_country,servercode,source)
     if source ==2:
         print("WT中转-----------------------------------")
         #customerCode = "100001"  # 100001  C02672
@@ -620,7 +750,7 @@ def request_car_with_bag_fee(data,CountryCode,transit_country,bag_list,customerC
                 fee_to_zhuanyun(Car_Number=car_number,Waybill_Code=virtual_number,Server_Code=servercode,source=source,Charge_Weight=Charge_Weight,Start_Place=CountryCode,end_Place=transit_country,BusinessTime=now_T())
             else:
                 ifoversea = 1
-                request_data = data_car_fee(car_number=car_number,departure_number=virtual_number, ifoversea=ifoversea)
+                request_data = data_car_fee(car_number=car_number,departure_number=virtual_number,servercode=servercode, ifoversea=ifoversea)
                 data = requests.post(url=url.fms + "/api/TransferFee/CreateTransferFee", json=request_data).text
                 print(request_data)
                 if eval(data)["message"] == "成功":
@@ -675,7 +805,7 @@ def request_car(data,CountryCode,transit_country,bag_number,waybill_number,custo
         :param data: xxx-2020+0904
         :return:
         '''
-    request_data = data_car(data,CountryCode,transit_country,source)
+    request_data = data_car(data,CountryCode,transit_country,servercode,source)
     if source ==2:
         print("WT中转-----------------------------------")
         #customerCode = "100001"  # 100001  C02672
@@ -730,6 +860,7 @@ def data_customer(lading_number,bag_list,count_number,servercode,source):
   "lading_unit": "LKG",#"实重计量单位"
   "customer_weight":110,
   "lading_bags":bag_list
+
 }
     data["billing_method"] = "L"
     return data
@@ -764,7 +895,7 @@ def data_airlading(lading_number,bag_count,count_number,servercode,source):
   "customer_name": "customer_name_001",
   "productCode": "productCode_001",
   "customer_weight": 36.0,
-  "service_bodyid": 64,
+  "service_bodyid": random.randint(28,66),
   "volume_unit": "KGV",
   "chargeable_unit": "KGC",
   "lading_unit": "KG",
@@ -823,7 +954,7 @@ def data_bag_yt(waybill_number,customerCode,yt_number,transfertype,servercode,so
         a=customerCode  # 100001  C02672
     customerCode=a
     for i in range(yt_number):
-        yt = request_yt(waybill_number,customerCode,transfertype,servercode,source)
+        yt = request_yt(waybill_number,customerCode,transfertype,servercode,0,source)
         if yt:
             yt_list.append(yt)
     data["shipperItems"] = yt_list
@@ -857,11 +988,13 @@ def request_airlading_withbag_fee(lading_number,bag_list,shipper_list,customerCo
     count_number=len(shipper_list)
     request_data = data_airlading(lading_number,bag_count,count_number,servercode,source)
     if source==2:
+        customerCode = get_customer_all(customerCode=customerCode,source=source)
         print("WT提单-----------------------------------")
         #customerCode = "100001"  # 100001  C02672
         request_data["customer_code"]=customerCode
         request_data["customer_name"]="WT客户名称_脚本"
         request_data["productCode"]="WT_Productcode"
+        request_data["productCode"] = "WT_Productcode"
     request_data["lading_items"] = bag_list
     lading_number = request_data["lading_number"]
     print("休眠2s")
@@ -966,11 +1099,15 @@ def request_airlading_withoutbag(lading_number,customerCode,servercode,source):
     '''
     request_data = data_airlading(lading_number,0,0,servercode,source)
     if source==2:
+        customer=get_customer_all(customerCode=customerCode,source=source)
         print("WT提单-----------------------------------")
         #customerCode = "100001"  # 100001  C02672
-        request_data["customer_code"]=customerCode
-        request_data["customer_name"]="WT客户名称_脚本"
-        request_data["productCode"]="WT_Productcode"
+        productCode = random.choice(["DHL-NL", "FDXGR-CA"])
+        request_data["customer_code"]=customer["customer_code"]
+        request_data["customer_name"]=customer["customer_shortname"]
+        request_data["productCode"]=productCode
+        request_data["customer_bodyId"] = customer["customer_bodyid"]
+        request_data["originai_time"]=y_m_d() +  " 11:11:11"
     lading_number = request_data["lading_number"]
     print("休眠10s")
     #time.sleep(10)
@@ -999,37 +1136,44 @@ def request_airlading_fee_withoutbag(lading_index,customerCode,Charge_Weight,ser
         fee_to_pqm(lading_number=lading_number, Charge_Weight=Charge_Weight, Volume_Weight=volume_weight,AirService_type="KY")
         return lading_number
     elif source==2:
-        Product_Code=random.choice(['DHL-NL','FDXGR-CA'])
-        request_data = [{
-        "Waybill_Code": lading_number,
-        "Customer_Code": customerCode,
-        "express_sallerid": "",
-        "business_ownership": "WWW",
-        "Product_Code": Product_Code,
-        "Product_Name": "美国快线GR美西(随便不用校验)",
-        "Fee_Code": "A4",
-        "Fee_Name": "速递运费",
-        "Arrival_Date": now_T(),
-        "Fee_Expense_Time": now_T(),
-        "Zone_Code": "US",
-        "Zone_Name": "邮编分区",
-        "Price_Value": 16.0,
-        "Price_Total_Value": 16.0,
-        "Currency": "RMB",
-        "system_source": "WT",
-        "Fk_type": "N",
-        "calculate_unit": "kg",
-        "note": "",
-        "income_type":"KY"
-    }]
-        request_url = url.fms+"/api/BillIncomeFee/CreateBillIncomeFee"
-        print(request_url)
-        data = requests.post(url=request_url, json=request_data).text
-        if eval(data)["message"] == "成功":
-            print("WT空运费用推送fms成功！！！",request_data)
-            return lading_number
-        else:
-            print("WT空运费用推送fms失败", request_url,data, request_data)
+        fee_to_wt(waybill_code=lading_number, huan_jie="KY", source=source)
+        # Product_Code=random.choice(['DHL-NL','FDXGR-CA'])
+        # request_data = []
+        # fee_code_list=["A8","A4","F9"]
+        # for fee_code in fee_code_list:
+        #     data = {
+        #     "Waybill_Code": lading_number,
+        #     "Customer_Code": customerCode,
+        #     "express_sallerid": "",
+        #     "business_ownership": "WWW",
+        #     "Product_Code": Product_Code,
+        #     "Product_Name": "美国快线GR美西(随便不用校验)",
+        #     "Fee_Code": fee_code,
+        #     "Fee_Name": "速递运费",
+        #     "Arrival_Date": now_T(),
+        #     "Fee_Expense_Time": now_T(),
+        #     "Zone_Code": "US",
+        #     "Zone_Name": "邮编分区",
+        #     "Price_Value": 16.0,
+        #     "Price_Total_Value": 16.0,
+        #     "Currency": "RMB",
+        #     "system_source": "WT",
+        #     "Fk_type": "N",
+        #     "calculate_unit": "kg",
+        #     "note": "",
+        #     "income_type":"KY",
+        #     "price_level":random.randint(1,3),
+        #     "Charge_Weight":3.69
+        #     }
+        #     request_data.append(data)
+        # request_url = url.fms+"/api/BillIncomeFee/CreateBillIncomeFee"
+        # print(request_url)
+        # data = requests.post(url=request_url, json=request_data).text
+        # if eval(data)["message"] == "成功":
+        #     print("WT空运费用推送fms成功！！！",request_data)
+        #     return lading_number
+        # else:
+        #     print("WT空运费用推送fms失败", request_url,data, request_data)
 def request_customer_withoutbag(data,servercode,customerCode,source=1):
     '''
     清关提单接口成功后执行清关和袋子接口
@@ -1040,11 +1184,16 @@ def request_customer_withoutbag(data,servercode,customerCode,source=1):
     lading_number = request_data["lading_number"]
     if source ==2:
         #customerCode="100001" #100001  C02672
+        print("WT提单-----------------------------------")
+        customer = get_customer_all(customerCode=customerCode, source=source)
         productCode=random.choice(["DHL-NL","FDXGR-CA"])
         request_data["customer_code"] = customerCode
         request_data["customer_name"] = "WT客户名称_脚本QG"
         request_data["productCode"] = productCode
-
+        request_data["customer_bodyId"] = customer["customer_bodyid"]
+        request_data["complete_time"] = y_m_d() +" 02:02:02",
+        request_data["count_number"] = 222,
+        request_data["bag_count"] = 111
     request_url = url.fms + "api/CustomsClear/CreateCustoms"
     data = requests.post(url=request_url, data=request_data).text
     print(request_url)
@@ -1267,28 +1416,35 @@ def request_customer_fee_withoutbag(lading_index,servercode,qg_servercode, custo
     request_customer_withoutbag(lading_number,qg_servercode, customerCode,source) #清关提单基础信息
     if source==2:
         print("WT清关提单-----------------------------------")
-        request_data = [{
-            "Waybill_Code": lading_number,
-            "Customer_Code": customerCode,
-            "express_sallerid": "",
-            "business_ownership": "WWW",
-            "Product_Code": "FDXGR-CA",
-            "Product_Name": "美国快线GR美西（单件服务）",
-            "Fee_Code": "A4",
-            "Fee_Name": "速递运费",
-            "Arrival_Date": now_T(),
-            "Fee_Expense_Time": now_T(),
-            "Zone_Code": "US",
-            "Zone_Name": "邮编分区",
-            "Price_Value": random.randint(10,99),
-            "Price_Total_Value": random.randint(10,99),
-            "Currency": "RMB",
-            "system_source": "WT",
-            "Fk_type": "N",
-            "calculate_unit": "kg",
-            "note": "",
-            "income_type": "QG"
-        }]
+        Product_Code = random.choice(['DHL-NL', 'FDXGR-CA'])
+        request_data = []
+        fee_code_list = ["F9", "D4", "P8","BF","B7"]
+        for fee_code in fee_code_list:
+            data = {
+                "Waybill_Code": lading_number,
+                "Customer_Code": customerCode,
+                "express_sallerid": "",
+                "business_ownership": "WWW",
+                "Product_Code": Product_Code,
+                "Product_Name": "美国快线GR美西(随便不用校验)",
+                "Fee_Code": fee_code,
+                "Fee_Name": "速递运费",
+                "Arrival_Date": now_T(),
+                "Fee_Expense_Time": now_T(),
+                "Zone_Code": "US",
+                "Zone_Name": "邮编分区",
+                "Price_Value": 16.0,
+                "Price_Total_Value": 16.0,
+                "Currency": "RMB",
+                "system_source": "WT",
+                "Fk_type": "N",
+                "calculate_unit": "kg",
+                "note": "备注",
+                "income_type": "QG",
+                "price_level": random.randint(1, 3),
+                "Charge_Weight": 3.69
+            }
+            request_data.append(data)
         request_url = url.fms + "/api/BillIncomeFee/CreateBillIncomeFee"
         print(request_url)
         data = requests.post(url=request_url, json=request_data).text
@@ -1650,8 +1806,8 @@ def request_lipei_with_bag(shipper_list,servercode,source):
             print("理赔数据推送fms成功！！！",request_data)
         else:
             print("理赔数据推送fms失败", request_url,data, request_data)
-def request_lipei(waybill_number,customerCode,transfertype,servercode,source):
-    shipper_hawbcode = request_yt(waybill_number=waybill_number,customerCode=customerCode,transfertype=transfertype,servercode=servercode,source=source)
+def request_lipei(waybill_number,customerCode,transfertype,servercode,if_pqm,source):
+    shipper_hawbcode = request_yt(waybill_number=waybill_number,customerCode=customerCode,transfertype=transfertype,servercode=servercode,if_pqm=0,source=source)
     request_data = data_lipei(shipper_hawbcode,servercode,source)
     request_url = url.fms+"/api/SettlementClaims/CreateSettlementClaims"
     print(request_url)
@@ -1755,7 +1911,7 @@ def request_paisong_fee(waybill_number,customerCode,transfertype,servercode,sour
     shipper_hawbcode = request_chongpai(waybill_number,customerCode,transfertype,servercode,source)
     return shipper_hawbcode["shipperCode"]
 def request_chongpai(waybill_number,customerCode,transfertype,servercode,source):
-    shipper_hawbcode = request_yt(waybill_number=waybill_number,customerCode=customerCode,transfertype=transfertype,servercode=servercode,source=source)
+    shipper_hawbcode = request_yt(waybill_number=waybill_number,customerCode=customerCode,transfertype=transfertype,servercode=servercode,if_pqm=0, source=source)
     request_data = data_chongpai(shipper_hawbcode,source)
     request_url = url.fms+"/api/OverseasDispatch/CreateOverseasDispatch"
     print(request_url)
@@ -1800,7 +1956,7 @@ def data_yd_fee(waybill_number, fee_number, source):
     print(data_list)
     return data_list
 def request_yd_fee(waybill_number,fee_number,customerCode,transfertype,servercode,source):
-    shipper_hawbcode = request_yt(waybill_number=waybill_number,customerCode=customerCode,transfertype=transfertype,servercode=servercode,source=source)
+    shipper_hawbcode = request_yt(waybill_number=waybill_number,customerCode=customerCode,transfertype=transfertype,servercode=servercode,if_pqm=0,source=source)
     request_data = data_yd_fee(shipper_hawbcode, fee_number, source)
     request_url = url.fms+"/api/EndFee/CreateEndFee"
     print(request_url)
@@ -1870,7 +2026,7 @@ def data_diaobo(transport_hawbcode,transport_type_code,bag_list):
         data["load_type_code"] = random.choice(load_type_code)
     print(data)
     return data
-def request_diaobo_withbag_fee(bag_list,shipper_list,diaobo_number,transport_type_code,if_pqm,source):
+def request_diaobo_withbag_fee(bag_list,shipper_list,diaobo_number,transport_type_code,servercode,if_pqm,source):
     for shipper in shipper_list:
         request_kunei_fee(shipper,source)
     print("休眠2秒")
@@ -1893,7 +2049,7 @@ def request_diaobo_withbag_fee(bag_list,shipper_list,diaobo_number,transport_typ
         else:
             if transport_type_code == "KC" or transport_type_code == "WL":
                 ifoversea= 3
-                request_data1 = data_car_fee(request_data["allocation_labelcode"], departure_number="11",ifoversea=ifoversea)
+                request_data1 = data_car_fee(request_data["transport_hawbcode"], departure_number=request_data["allocation_labelcode"],servercode=servercode,ifoversea=ifoversea)
                 request_url = url.fms + "/api/TransferFee/CreateTransferFee"
                 data = requests.post(request_url, json=request_data1).text
                 print(request_data1)
@@ -2000,7 +2156,7 @@ def data_fandian_income(shipperCode,source,customerCode):
     print(data)
     return data
 def request_data_fandian_income(waybill_number,customerCode,transfertype,servercode,source):
-    shipper_hawbcode = request_yt(waybill_number,customerCode,transfertype,servercode,source)
+    shipper_hawbcode = request_yt(waybill_number,customerCode,transfertype,servercode,0,source)
     request_data = data_fandian_income(shipper_hawbcode,source,customerCode)
     request_url = url.fms + "/api/ReceivableRebate/CreateReceivableRebate"
     print(request_url)
@@ -2011,7 +2167,7 @@ def request_data_fandian_income(waybill_number,customerCode,transfertype,serverc
     else:
         print("应收返点信息推送fms失败", request_url, data, request_data)
 def request_data_fandian_all(waybill_number,customerCode,transfertype,servercode,source):
-    shipper_hawbcode = request_yt(waybill_number,customerCode,transfertype,servercode,source)
+    shipper_hawbcode = request_yt(waybill_number,customerCode,transfertype,servercode,0,source)
     request_data = data_fandian_income(shipper_hawbcode,source,customerCode)
     request_url = url.fms + "/api/ReceivableRebate/CreateReceivableRebate"
     print(request_url)
@@ -2106,7 +2262,24 @@ def request_fahuo_withbag_fee(bag_list,shipper_list,org_code,destination,charge_
         fee_to_zhuanyun(Car_Number=car_data["car_number"],Waybill_Code=car_data["departure_number"],Server_Code=servercode,source=source,Charge_Weight=charge_weight,Start_Place=org_code,end_Place=destination,BusinessTime=now_T())
         return car_data["car_number"]
     else:
-        pass
+        ifoversea = 2
+        request_data = data_car_fee(car_number=car_data["car_number"], departure_number=car_data["departure_number"], servercode=servercode,
+                                    ifoversea=ifoversea)
+        data = requests.post(url=url.fms + "/api/TransferFee/CreateTransferFee", json=request_data).text
+        print(request_data)
+        if eval(data)["message"] == "成功":
+            if ifoversea == 1:
+                print("中转卡车费用推送fms成功！！！", request_data)
+            elif ifoversea == 2:
+                print("发货中转费用推送fms成功！！！", request_data)
+            return request_data["car_number"]
+        else:
+            if ifoversea == 1:
+                print("中转卡车费用推送fms失败")
+            elif ifoversea == 2:
+                print("发货中转费用推送fms失败")
+        return car_number
+
 def request_fahuo_fee(org_code,destination,box,waybill_number,charge_weight,customerCode,bill_count,servercode,transfertype,source,iffahuo):
     car_data = request_fahuo(servercode,box,bill_count,charge_weight,org_code,destination,source,iffahuo,waybill_number,customerCode,transfertype)
     fee_to_zhuanyun(Car_Number=car_data[0]["car_number"],Waybill_Code=car_data[0]["departure_number"],Server_Code=servercode,source=source,Charge_Weight=charge_weight,Start_Place=org_code,end_Place=destination,BusinessTime=now_T())
@@ -2274,26 +2447,27 @@ if __name__ == "__main__":
     bill_count=1
     currency="RMB"
     data_list=[]
-    for i in range(1):
+    for i in range(10):
         print("第%s个提单："%(i+1))
+        lading_index = lading_generate()
         servercode = random.choice(server_list)
         print(servercode)
         #公用袋号——运单
-        bags,shippers,bag_shipper_list = data_bag_shipper_list(bag_number, waybill_number, customerCode, yt_number, servercode, transfertype, source)
+        #bags,shippers,bag_shipper_list = data_bag_shipper_list(bag_number, waybill_number, customerCode, yt_number, servercode, transfertype, source)
         # # #空运提单费用
-        # lading_number = request_airlading_withbag_fee(lading_number=str(lading_index+i), bag_list=bags, shipper_list=shippers, customerCode=customerCode, servercode=servercode, Charge_Weight=Charge_Weight,currency=currency,fee_number=fee_number, source=source)
+        #lading_number = request_airlading_withbag_fee(lading_number=str(lading_index+i), bag_list=bags, shipper_list=shippers, customerCode=customerCode, servercode=servercode, Charge_Weight=Charge_Weight,currency=currency,fee_number=fee_number, source=source)
         # # # 清关提单费用
-        # request_customer_withbag_fee(lading_number=lading_number, bag_list=bags, shipper_list=shippers, qg_servercode=qg_servercode, customerCode=customerCode, if_vat=0, source=1)
+        #request_customer_withbag_fee(lading_number=lading_number, bag_list=bags, shipper_list=shippers, qg_servercode=qg_servercode, customerCode=customerCode, if_vat=0, source=1)
         # # # 清关VAT费用
-        # #request_customer_withbag_fee(lading_number=lading_number, bag_list=bags, shipper_list=shippers,qg_servercode=qg_servercode, customerCode=customerCode,Charge_Weight=Charge_Weight, Currency=currency, if_vat=1, source=1)
+        #request_customer_withbag_fee(lading_number=lading_number, bag_list=bags, shipper_list=shippers,qg_servercode=qg_servercode, customerCode=customerCode,Charge_Weight=Charge_Weight, Currency=currency, if_vat=1, source=1)
         # # # 重派费用-不经过报价                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        #海外重派-不经过报价
-        # #request_chongpai_withbag_fee(shipper_list=shippers, customerCode=customerCode, servercode=servercode, if_pqm=0, source=source)
+        #request_chongpai_withbag_fee(shipper_list=shippers, customerCode=customerCode, servercode=servercode, if_pqm=0, source=source)
         # # # 理赔费用
         # #request_lipei_with_bag(shipper_list=shippers, servercode=servercode, source=source)
         # # # 中转费用-不经过报价
-        # request_car_with_bag_fee(data=car_number, CountryCode=CountryCode, transit_country=transit_country, bag_list=bags, customerCode=customerCode, source=source, if_pqm=0, iffahuo=1)
+        #request_car_with_bag_fee(data=car_number, CountryCode=CountryCode, transit_country=transit_country, bag_list=bags, customerCode=customerCode, source=source,servercode=servercode, if_pqm=0, iffahuo=1)
         # # # 调拨-费用-不经过报价0 经过报价1
-        request_diaobo_withbag_fee(bag_list=bag_shipper_list, shipper_list=shippers, diaobo_number=diaobo_number,transport_type_code=transport_type_code, if_pqm=1, source=source)
+        #request_diaobo_withbag_fee(bag_list=bag_shipper_list, shipper_list=shippers, diaobo_number=diaobo_number,transport_type_code=transport_type_code,servercode=servercode, if_pqm=1, source=source)
         # # # 发货中转费用 -经过报价
         #request_fahuo_withbag_fee(bag_list=bags, org_code=org_code, destination=destination, charge_weight=Charge_Weight, shipper_list=shippers, servercode=fh_servercode, if_pqm=1,source=source)
         # # #request_airlading(str(lading_index),bag_number=3)
@@ -2301,26 +2475,28 @@ if __name__ == "__main__":
         #request_bag_yt(waybill_number+i,customerCode,yt_number,transfertype,source)
         #request_customer(str(lading_index), bag_number=3,source=1)
         #request_car(str(lading_index), bag_number=3,source=1)
-        #data = request_yt(waybill_number+i,customerCode,transfertype,servercode,source)
+        #data = request_yt(waybill_number+i,customerCode,transfertype,servercode,0,source)
+        #WT 末端
+        #data = request_yt(waybill_number + i, customerCode=wt_customerCode, transfertype=transfertype, servercode=servercode, source=2)
         #WT 空运
         #data = request_airlading_fee_withoutbag(lading_index = str(lading_index+i), customerCode=wt_customerCode, Charge_Weight=Charge_Weight, servercode=servercode, source=2)
         # WT 清关
         #data = request_customer_fee_withoutbag(lading_index = str(lading_index+i),servercode=servercode,qg_servercode=qg_servercode, customerCode=wt_customerCode, Charge_Weight=Charge_Weight, source = 2)
         # WT 中转
         #data = request_car_fee_withoutbag(car_number+i, CountryCode, transit_country, wt_customerCode, servercode, source=2)
-        # data = request_airlading_fee(lading_index=str(lading_index+i),bag_number=bag_number,
-        #                       waybill_number=waybill_number,customerCode=customerCode,
-        #                       Charge_Weight=Charge_Weight,yt_number=yt_number,
-        #                       fee_number=fee_number,transfertype=transfertype,
-        #                       ifotherfee=ifotherfee,servercode=servercode,source=source)
+        #data = request_airlading_fee(lading_index=str(lading_index),bag_number=bag_number,
+        #                      waybill_number=waybill_number,customerCode=customerCode,
+        #                      Charge_Weight=Charge_Weight,yt_number=yt_number,
+        #                     fee_number=fee_number,transfertype=transfertype,
+        #                      ifotherfee=ifotherfee,servercode=servercode,source=source)
 
         #data_customer_fee(lading_number="100-202009r11")
         #清关提单费用
-        # data=request_customer_fee(lading_index=str(lading_index+i),bag_number=bag_number,
-        #                       waybill_number=waybill_number,customerCode=customerCode,
-        #                       Charge_Weight=Charge_Weight,yt_number=yt_number,
-        #                       fee_number=fee_number,transfertype=transfertype,
-        #                       ifotherfee=ifotherfee,servercode=servercode,source=source,qg_servercode=qg_servercode)
+        data=request_customer_fee(lading_index=str(lading_index+i),bag_number=bag_number,
+                               waybill_number=waybill_number,customerCode=customerCode,
+                               Charge_Weight=Charge_Weight,yt_number=yt_number,
+                              fee_number=fee_number,transfertype=transfertype,
+                               ifotherfee=ifotherfee,servercode=servercode,source=source,qg_servercode=qg_servercode)
         #清关提单有vat费用
         # data=request_customer_fee(lading_index=str(lading_index+i),bag_number=bag_number,
         #                       waybill_number=waybill_number,customerCode=customerCode,
