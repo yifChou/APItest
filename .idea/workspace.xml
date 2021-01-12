@@ -23,7 +23,9 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FMS_settlement.py" beforeDir="false" afterPath="$PROJECT_DIR$/FMS_settlement.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fee_data_pqm.py" beforeDir="false" afterPath="$PROJECT_DIR$/fee_data_pqm.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/request_fms.py" beforeDir="false" afterPath="$PROJECT_DIR$/request_fms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/request_wcf_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/request_wcf_api.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +76,7 @@
   <component name="PropertiesComponent">
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../test_interFace/data/data.xls" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../locust_test" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
@@ -133,27 +135,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="newcode" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="APItest" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/newcode.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="request_fms" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="APItest" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -168,6 +149,27 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/request_fms.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="request_wcf_api" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="APItest" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/request_wcf_api.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -202,9 +204,9 @@
       <list>
         <item itemvalue="Python.request_fms" />
         <item itemvalue="Python.FMS_settlement" />
+        <item itemvalue="Python.request_wcf_api" />
         <item itemvalue="Python.test1" />
         <item itemvalue="Python.common_util" />
-        <item itemvalue="Python.newcode" />
       </list>
     </recent_temporary>
   </component>
@@ -419,7 +421,14 @@
       <option name="project" value="LOCAL" />
       <updated>1609314462991</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="同个运单做多个环节的数据">
+      <created>1609323459473</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1609323459473</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -455,50 +464,50 @@
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
     <state x="800" y="449" key="#com.jetbrains.python.refactoring.move.PyMoveModuleMembersDialog/0.40.1920.1040@0.40.1920.1040" timestamp="1608625370001" />
-    <state x="738" y="291" key="FileChooserDialogImpl" timestamp="1608804315219">
+    <state x="738" y="291" key="FileChooserDialogImpl" timestamp="1610442886724">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state x="738" y="291" key="FileChooserDialogImpl/0.40.1920.1040@0.40.1920.1040" timestamp="1608804315219" />
-    <state width="1899" height="182" key="GridCell.Tab.0.bottom" timestamp="1609323388570">
+    <state x="738" y="291" key="FileChooserDialogImpl/0.40.1920.1040@0.40.1920.1040" timestamp="1610442886724" />
+    <state width="1899" height="298" key="GridCell.Tab.0.bottom" timestamp="1610438470514">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1899" height="182" key="GridCell.Tab.0.bottom/0.40.1920.1040@0.40.1920.1040" timestamp="1609323388570" />
-    <state width="1899" height="182" key="GridCell.Tab.0.center" timestamp="1609323388570">
+    <state width="1899" height="298" key="GridCell.Tab.0.bottom/0.40.1920.1040@0.40.1920.1040" timestamp="1610438470514" />
+    <state width="1899" height="298" key="GridCell.Tab.0.center" timestamp="1610438470514">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1899" height="182" key="GridCell.Tab.0.center/0.40.1920.1040@0.40.1920.1040" timestamp="1609323388570" />
-    <state width="1899" height="182" key="GridCell.Tab.0.left" timestamp="1609323388569">
+    <state width="1899" height="298" key="GridCell.Tab.0.center/0.40.1920.1040@0.40.1920.1040" timestamp="1610438470514" />
+    <state width="1899" height="298" key="GridCell.Tab.0.left" timestamp="1610438470512">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1899" height="182" key="GridCell.Tab.0.left/0.40.1920.1040@0.40.1920.1040" timestamp="1609323388569" />
-    <state width="1899" height="182" key="GridCell.Tab.0.right" timestamp="1609323388570">
+    <state width="1899" height="298" key="GridCell.Tab.0.left/0.40.1920.1040@0.40.1920.1040" timestamp="1610438470512" />
+    <state width="1899" height="298" key="GridCell.Tab.0.right" timestamp="1610438470514">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1899" height="182" key="GridCell.Tab.0.right/0.40.1920.1040@0.40.1920.1040" timestamp="1609323388570" />
-    <state width="1899" height="413" key="GridCell.Tab.1.bottom" timestamp="1609316072003">
+    <state width="1899" height="298" key="GridCell.Tab.0.right/0.40.1920.1040@0.40.1920.1040" timestamp="1610438470514" />
+    <state width="1899" height="413" key="GridCell.Tab.1.bottom" timestamp="1609407249073">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1899" height="413" key="GridCell.Tab.1.bottom/0.40.1920.1040@0.40.1920.1040" timestamp="1609316072003" />
-    <state width="1899" height="413" key="GridCell.Tab.1.center" timestamp="1609316072003">
+    <state width="1899" height="413" key="GridCell.Tab.1.bottom/0.40.1920.1040@0.40.1920.1040" timestamp="1609407249073" />
+    <state width="1899" height="413" key="GridCell.Tab.1.center" timestamp="1609407249073">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1899" height="413" key="GridCell.Tab.1.center/0.40.1920.1040@0.40.1920.1040" timestamp="1609316072003" />
-    <state width="1899" height="413" key="GridCell.Tab.1.left" timestamp="1609316072003">
+    <state width="1899" height="413" key="GridCell.Tab.1.center/0.40.1920.1040@0.40.1920.1040" timestamp="1609407249073" />
+    <state width="1899" height="413" key="GridCell.Tab.1.left" timestamp="1609407249073">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1899" height="413" key="GridCell.Tab.1.left/0.40.1920.1040@0.40.1920.1040" timestamp="1609316072003" />
-    <state width="1899" height="413" key="GridCell.Tab.1.right" timestamp="1609316072003">
+    <state width="1899" height="413" key="GridCell.Tab.1.left/0.40.1920.1040@0.40.1920.1040" timestamp="1609407249073" />
+    <state width="1899" height="413" key="GridCell.Tab.1.right" timestamp="1609407249073">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state width="1899" height="413" key="GridCell.Tab.1.right/0.40.1920.1040@0.40.1920.1040" timestamp="1609316072003" />
+    <state width="1899" height="413" key="GridCell.Tab.1.right/0.40.1920.1040@0.40.1920.1040" timestamp="1609407249073" />
     <state x="623" y="234" width="983" height="779" key="SettingsEditor" timestamp="1608799244504">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
     <state x="623" y="234" width="983" height="779" key="SettingsEditor/0.40.1920.1040@0.40.1920.1040" timestamp="1608799244504" />
-    <state x="563" y="294" key="Vcs.Push.Dialog.v2" timestamp="1609314465562">
+    <state x="563" y="294" key="Vcs.Push.Dialog.v2" timestamp="1609323461983">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
-    <state x="563" y="294" key="Vcs.Push.Dialog.v2/0.40.1920.1040@0.40.1920.1040" timestamp="1609314465562" />
+    <state x="563" y="294" key="Vcs.Push.Dialog.v2/0.40.1920.1040@0.40.1920.1040" timestamp="1609323461983" />
     <state x="623" y="265" width="672" height="678" key="search.everywhere.popup" timestamp="1607420383671">
       <screen x="0" y="40" width="1920" height="1040" />
     </state>
@@ -529,38 +538,43 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/request_fms.py</url>
-          <line>99</line>
+          <line>100</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/request_fms.py</url>
-          <line>1378</line>
+          <line>1394</line>
           <option name="timeStamp" value="15" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/request_fms.py</url>
-          <line>463</line>
+          <line>470</line>
           <option name="timeStamp" value="22" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/fee_data_pqm.py</url>
-          <line>395</line>
+          <line>521</line>
           <option name="timeStamp" value="25" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/fee_data_pqm.py</url>
-          <line>434</line>
+          <line>560</line>
           <option name="timeStamp" value="26" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/request_fms.py</url>
-          <line>1549</line>
+          <line>1569</line>
           <option name="timeStamp" value="28" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/request_fms.py</url>
-          <line>909</line>
+          <line>920</line>
           <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/request_fms.py</url>
+          <line>1027</line>
+          <option name="timeStamp" value="30" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

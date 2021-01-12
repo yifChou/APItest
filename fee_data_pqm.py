@@ -1,8 +1,11 @@
 import pymysql
+import time
 import random
 from config import url
 import json
 import requests
+def now():
+    return time.strftime("%Y-%m-%d %H:%M:%S")
 def connect_sql(database_name):
     try:
         conn = pymysql.connect(
@@ -340,6 +343,129 @@ def fee_to_qingguan(Waybill_Code,Server_Code,ServerPlace_Code,source,Charge_Weig
         # return request_data["shipper_hawbcode"]
     else:
         print("清关费用推送pqm失败", request_url, data, request_data)
+def fee_to_wt(Waybill_Code,Server_Code,Product_Code,Customer_Code,income_type,source):
+    if source==1:
+        source="YT"
+    else:
+        source = "WT"
+    # data = {"Waybill_Code":Waybill_Code,"Server_Code":Server_Code,"System_Code":source,"Arrival_Date":BusinessTime,"Customs_Clearance_Port": Customs_Clearance_Port,"Charge_Weight":Charge_Weight,
+    #         "Currency":Currency,"Declared_Value":random.randint(1,9),"ServerPlace_Code":ServerPlace_Code,"Server_Type":"QG","Currency_Code":"TD","Customer_Code":None,"Product_Code":"","Og_id_ChargeFirst":None,"Og_id_ChargeSecond":None,"Country":None,"Postcode":None,"City":None,"Province":None,"Unit_Code":"KG","Unit_Length":None,"Unit_Area":None,"Unit_Bulk":None,"Unit_Volume":None,"ExtraService":None,"ExtraService_Coefficient":None,"Pieces":0,"Category_Code":None,"Tariff":None,"Airline":None,"Departure_Airport":None,"Destination_Airport":None,"Remark":None,"Ticket":0,"HS_Code":0,"Box_Number":0,"First_Long":0.0,"Two_Long":0.0,"Three_Long":0.0,"BusinessTime":BusinessTime,"airline_two_code":None,"detailEntities":None,"Goods_Code":None,"IsFinalCharge":False,"ChargType":None,"HCustomsNumber":0.0,"MCustomsNumber":0.0,"LCustomsNumber":0.0,"HCargoValueNumber":0.0,"MCargoValueNumber":0.0,"LCargoValueNumber":0.0,"Charge_Volume":2.000,"Tray_Number":0,"Truck_Number":0,"TimeUnti":None,"TimeVaule":0,"TrackingNumber":None}
+    data = {
+        "Waybill_Code": Waybill_Code,
+        "Currency_Code": "YD",
+        "Customer_Code": Customer_Code,
+        "Product_Code": Product_Code,#"FDXGR-CA",
+        "Server_Code": Server_Code,
+        "ServerPlace_Code": None,
+        "System_Code": "WT",
+        "Og_id_ChargeFirst": "WT-SZ",
+        "Og_id_ChargeSecond": None,
+        "Arrival_Date": now(),
+        "Country": None,
+        "Postcode": None,
+        "City": None,
+        "Province": None,
+        "Charge_Weight": 1995,
+        "Unit_Code": "KG",
+        "Unit_Length": None,
+        "Unit_Area": None,
+        "Unit_Bulk": None,
+        "Unit_Volume": None,
+        "Pieces": 0,
+        "Category_Code": None,
+        "Declared_Value": 17415.02,
+        "Currency": "USD",
+        "Tariff": None,
+        "Airline": None,
+        "Departure_Airport": None,
+        "Destination_Airport": None,
+        "Customs_Clearance_Port": "LHR",
+        "Start_Place": None,
+        "end_Place": None,
+        "Remark": None,
+        "Working_Time": now(),
+        "Ticket": 4558,
+        "HS_Code": 0,
+        "Box_Number": 103,
+        "First_Long": 0,
+        "Two_Long": 0,
+        "Three_Long": 0,
+        "BusinessTime": None,
+        "airline_two_code": "KE",
+        "detailEntities": [],
+        "GoodsCode": None,
+        "T_Declared_Value": 0,
+        "GoodsNumber": 0,
+        "Extra_ServicesList": None,
+        "Goods_Code": None,
+        "IsFinalCharge": False,
+        "ChargType": None,
+        "HCustomsNumber": 0,
+        "MCustomsNumber": 772,
+        "LCustomsNumber": 0,
+        "HCargoValueNumber": 0,
+        "MCargoValueNumber": 17415.02,
+        "LCargoValueNumber": 0,
+        "Charge_Volume": 0,
+        "Tray_Number": 0,
+        "Truck_Number": 0,
+        "TimeUnti": None,
+        "TimeVaule": 0,
+        "TrackingNumber": None,
+        "StartCountry": None,
+        "EndCountry": None,
+        "HAWB_Number": 0,
+        "Car_Number": None,
+        "Start_TransferPoint": None,
+        "End_TransferPoint": None,
+        "Arrive_Date": None,
+        "Dock_system": None,
+        "Charge_Pattern": None,
+        "EndServer_Code": None,
+        "StartPlaceCode": None,
+        "EndPlaceCode": None
+    }
+    if income_type=="KY":
+        data["Currency_Code"]="YD"
+    if income_type=="ZY":
+        data["Currency_Code"]="KC"
+    if income_type=="QG":
+        data["Currency_Code"]="TD"
+    if income_type=="QG":
+        data["Currency_Code"]="TD"
+    if income_type=="PS":
+        data["Currency_Code"]="YD"
+    request_data = {
+    "waybill_code": Waybill_Code,
+    "jsonstring": json.dumps(data, ensure_ascii=False),
+    "system_source": source,
+    "product_code": Product_Code,
+    "income_type": income_type
+}
+    print(request_data)
+    request_url = url.pqm_url + "/api/BilJsoncharged/AddBilJsoncharged"
+    print(request_url)
+    data = requests.post(url=request_url, json=request_data).text
+    print(data)
+    if '"Code":0' in data:
+        if income_type=="KY":
+            print("WT空运应收费用推送pqm成功！！！", request_data)
+        elif income_type=="QG":
+            print("WT清关应收费用推送pqm成功！！！", request_data)
+        elif income_type=="ZY":
+            print("WT中转应收费用推送pqm成功！！！", request_data)
+        elif income_type == "PS":
+            print("WT末端应收费用推送pqm成功！！！", request_data)
+        # return request_data["shipper_hawbcode"]
+    else:
+        if income_type=="KY":
+            print("WT空运应收费用推送pqm失败", request_data)
+        elif income_type=="QG":
+            print("WT清关应收费用推送pqm失败", request_data)
+        elif income_type=="ZY":
+            print("WT中转应收费用推送pqm失败", request_data)
+        elif income_type == "PS":
+            print("WT末端应收费用推送pqm失败", request_data)
 def fee_to_diaobo(transport_hawbcode,charge_type_code,db_time):
     # if source==1:
     #     source="YT"

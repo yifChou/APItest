@@ -17,7 +17,7 @@ class Method:
         client = Client(url_main)
         client.set_options(location = url)#(location = "http://10.168.95.32:5004/FmsAPIServicesForHttpDelegate")
         #print(data_type,type(interface),type(data))
-        canshu, data_value = data.split("=", 1) # 把请求数据分成2分，用于判断是对象数据还是一般参数数据
+        canshu, data_value = data.split("=") # 把请求数据分成2分，用于判断是对象数据还是一般参数数据
         if data_value[0]!="{":
             "如果接口是正常参数，一个一个赋值"
             request_str = "client.service."+interface+"("+data+")"
@@ -27,8 +27,8 @@ class Method:
         else:
             "如果接口参数是对象，则需先创建对象数据"
             data_dict = eval(data_value)
-            print(data_dict)
-            request_str = "client.service."+interface+"(" + canshu + "=data_dict)"
+            print("data_dict",type(data_dict),data_dict)
+            request_str = "client.service."+interface+"(" + canshu + "="+str(data_dict)+")"
             print("请求接口：",request_str)
             result = eval(request_str)
             return str(result)

@@ -2,7 +2,7 @@ from request_fms import *
 from connect_mysql import *
 from common_util import *
 from fee_data_pqm import fee_to_zhuanyun
-
+from config import *
 '''发货中转'''
 def fahuo_jiesuan_yugu(fahuo_number,org_code,destination,box,waybill_number,charge_weight,customerCode,bill_count,servercode,transfertype,source,iffahuo):
     data_list=[]
@@ -255,9 +255,9 @@ def sql_to_qgydbill_fee(billid,car_id_list):
                 if excute_sql(fms_db, fms_conn, sql_data) != 1:
                     print("遇到异常")
                     return 0
-def sql_to_qgydbill_fentan_bag(lading_number,bag_list,shipper_list,qg_servercode, customerCode, source):
+def sql_to_qgydbill_fentan_bag(lading_list,bag_list,shipper_list,qg_servercode, customerCode, source):
     car_list=[]
-    for i in range(lading_number):
+    for lading_number in lading_list:
         car_number1 = request_customer_withbag_fee(lading_number=lading_number, bag_list=bag_list, shipper_list=shipper_list, qg_servercode=qg_servercode, customerCode=customerCode, if_vat=1, source=source)
         car_list.append(car_number1)
     billid = sql_to_qgydbill(servercod=qg_servercode)
@@ -978,15 +978,14 @@ if __name__=="__main__":
     lading_sum=1
     car_sum=1
     iffahuo=1
-
     ladingnumber=1 #提单数量
     servercode_diaobo="5555555"
     fh_servercode="5555555"
     currency="RMB"
     data_list=[]
     if_yichang = 0  # 0则用新的提单和运单
-    server_list = ["kenny_code"]#, "kenny_code","yif"
-    servercode = random.choice(server_list)
+    server_list = ["yif"]#, "kenny_code","yif"
+    servercode = sys_data.severCode
     print(servercode)
     if if_yichang==0:
         bag_list, shipper_list, bag_shipper_list = data_bag_shipper_list(bag_number, waybill_number, customerCode, yt_number,md_servercode, transfertype, source)
@@ -1011,9 +1010,9 @@ if __name__=="__main__":
     # 实际-调拨
     sql_to_diaobobill_fentan_bag(lading_sum=lading_sum, bag_list=bag_shipper_list, shipper_list=shipper_list, if_pqm=0,transport_type_code=transport_type_code, servercode=servercode, source=source,currency=currency)
     #实际 - 理赔明细对账
-    sql_to_liepei_mingxi_daijiesuan_bag(shipper_list, servercode, source)
+    #sql_to_liepei_mingxi_daijiesuan_bag(shipper_list, servercode, source)
     # #实际-理赔总金额对账
-    #sql_to_liepei_ZONG_daijiesuan_bag(shipper_list,servercode, source)
+    sql_to_liepei_ZONG_daijiesuan_bag(shipper_list,servercode, source)
     # # 实际-海外重派结算
     sql_to_chongpai_daijiesuan_bag(shipper_list=shipper_list,customerCode=customerCode,if_pqm=0,servercode=servercode,source=source)
     # 实际-中转
@@ -1021,13 +1020,13 @@ if __name__=="__main__":
     #实际-发货中转 --末端预估需要发货中转
     sql_to_fhzzbill_fentan_bag(lading_sum, org_code, destination, bag_list, shipper_list, Charge_Weight, servercode,if_pqm=0, source=source)
     #实际-清关提单
-    sql_to_qgbill_fentan_bag(lading_list=lading_list, bag_list=bag_list, shipper_list=shipper_list, qg_servercode=servercode, customerCode=customerCode,if_vat=0,source=source)
+    #sql_to_qgbill_fentan_bag(lading_list=lading_list, bag_list=bag_list, shipper_list=shipper_list, qg_servercode=servercode, customerCode=customerCode,if_vat=0,source=source)
     # 实际-清关明细
-    #sql_to_qgydbill_fentan_bag(lading_number=lading_sum, qg_servercode=qg_servercode,bag_list=bag_list,shipper_list=shipper_list, customerCode=customerCode, source=source)
+    sql_to_qgydbill_fentan_bag(lading_list=lading_list, qg_servercode=qg_servercode,bag_list=bag_list,shipper_list=shipper_list, customerCode=customerCode, source=source)
     # 实际-末端明细
-    #sql_to_MDYD_daijiesuan_bag(shipper_code_list=shipper_list, servercode=md_servercode)
+    sql_to_MDYD_daijiesuan_bag(shipper_code_list=shipper_list, servercode=md_servercode)
     # 实际-末端提单
-    sql_to_MDlading_daijiesuan_bag(lading_list, md_servercode)
+    #sql_to_MDlading_daijiesuan_bag(lading_list, md_servercode)
     '''单独环节'''
     #理赔预估费用插入
     #lipei_jiesuan_yugu(yd_number=yt_number, waybill_number=waybill_number, customerCode=customerCode, transfertype=transfertype, servercode=servercode, source=source)
