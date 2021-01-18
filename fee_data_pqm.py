@@ -365,7 +365,7 @@ def fee_to_wt(Waybill_Code,Server_Code,Product_Code,Customer_Code,income_type,so
         "Postcode": None,
         "City": None,
         "Province": None,
-        "Charge_Weight": 1995,
+        "Charge_Weight": random.randint(10,99),
         "Unit_Code": "KG",
         "Unit_Length": None,
         "Unit_Area": None,
