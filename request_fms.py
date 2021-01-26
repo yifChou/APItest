@@ -1258,23 +1258,22 @@ def request_customer_withbag_fee(lading_number, bag_list,shipper_list,qg_serverc
         print(request_url, "结果：" + data)
         if eval(data)["message"] == "成功":
             print("清关提单费用推送fms成功！！！", request_data)
-            return lading_number
+            if if_vat == 1:
+                print("VATVATVATVATVATVATVATVAT")
+                request_data = data_vat_fee(lading_number, shipper_list, Customs_Clearance_Port)
+                request_url = url.fms + "/api/CustomsFee/CreateCustomsVatFee"
+                data = requests.post(url=request_url, json=request_data).text
+                print(request_url, "结果：" + data)
+                if eval(data)["message"] == "成功":
+                    print("清关提单vat费用推送fms成功！！！", request_data)
+                    return lading_number
+                else:
+                    print("清关提单vat费用推送fms失败", request_url, data, request_data)
+            else:
+                return lading_number
         else:
             print("清关提单费用推送fms失败", request_url, data, request_data)
         #vat费用
-        if if_vat==1:
-            print("VATVATVATVATVATVATVATVAT")
-            request_data = data_vat_fee(lading_number,shipper_list,Customs_Clearance_Port)
-            request_url = url.fms + "/api/CustomsFee/CreateCustomsVatFee"
-            data = requests.post(url=request_url, json=request_data).text
-            print(request_url, "结果：" + data)
-            if eval(data)["message"] == "成功":
-                print("清关提单vat费用推送fms成功！！！", request_data)
-                return lading_number
-            else:
-                print("清关提单vat费用推送fms失败", request_url, data, request_data)
-        else:
-            return lading_number
     elif source==2:
         print("WT清关提单-----------------------------------")
         request_data = [{
@@ -2599,17 +2598,17 @@ if __name__ == "__main__":
         # # # 清关提单费用
         #request_customer_withbag_fee(lading_number=lading_number, bag_list=bags, shipper_list=shippers, qg_servercode=qg_servercode, customerCode=customerCode, if_vat=0, source=1)
         # # # 清关VAT费用
-        #request_customer_withbag_fee(lading_number=lading_number, bag_list=bags, shipper_list=shippers,qg_servercode=qg_servercode, customerCode=customerCode,Charge_Weight=Charge_Weight, Currency=currency, if_vat=1, source=1)
+        request_customer_withbag_fee(lading_number=lading_number, bag_list=bags, shipper_list=shippers,qg_servercode=qg_servercode, customerCode=customerCode, if_vat=1, source=1)
         # # # 重派费用-不经过报价                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        #海外重派-不经过报价
         #request_chongpai_withbag_fee(shipper_list=shippers, customerCode=customerCode, servercode=servercode, if_pqm=0, source=source)
         # # # 理赔费用
         # #request_lipei_with_bag(shipper_list=shippers, servercode=servercode, source=source)
         # # # 中转费用-不经过报价
-        #request_car_with_bag_fee(data=car_number, CountryCode=CountryCode, transit_country=transit_country, bag_list=bags, customerCode=customerCode, source=source,servercode=servercode, if_pqm=0, iffahuo=1)
+        request_car_with_bag_fee(data=car_number, CountryCode=CountryCode, transit_country=transit_country, bag_list=bags, customerCode=customerCode, source=source,servercode=servercode, if_pqm=0, iffahuo=1)
         # # # 调拨-费用-不经过报价0 经过报价1
         #request_diaobo_withbag_fee(bag_list=bag_shipper_list, shipper_list=shippers, diaobo_number=diaobo_number,transport_type_code=transport_type_code,servercode=servercode, if_pqm=1, source=source)
         # # # 发货中转费用 -经过报价
-        #request_fahuo_withbag_fee(bag_list=bags, org_code=org_code, destination=destination, charge_weight=Charge_Weight, shipper_list=shippers, servercode=fh_servercode, if_pqm=1,source=source)
+        request_fahuo_withbag_fee(bag_list=bags, org_code=org_code, destination=destination, charge_weight=Charge_Weight, shipper_list=shippers, servercode=fh_servercode, if_pqm=1,source=source)
         # # #request_airlading(str(lading_index),bag_number=3)
         #request_bag(source=1)
         #request_bag_yt(waybill_number+i,customerCode,yt_number,transfertype,source)
@@ -2623,8 +2622,8 @@ if __name__ == "__main__":
         # WT 补收
         #wt_bushou_data(dzbm="KYDZ0001", shipper_code=data, bsn_type="N", server_code=servercode,customer_code=wt_customerCode, currency_code=currency, source=2)
         # #WT 空运
-        #data = request_airlading_fee_withoutbag(lading_index = str(lading_index+i), customerCode=wt_customerCode, Charge_Weight=Charge_Weight, servercode=servercode,if_pqm=1, source=2)
-        #wt_bushou_data(dzbm="KYDZ0002", shipper_code=data, bsn_type="A", server_code=servercode,customer_code=wt_customerCode, currency_code=currency, source=2)
+        data = request_airlading_fee_withoutbag(lading_index = str(lading_index+i), customerCode=wt_customerCode, Charge_Weight=Charge_Weight, servercode=servercode,if_pqm=1, source=2)
+        wt_bushou_data(dzbm="KYDZ0002", shipper_code=data, bsn_type="A", server_code=servercode,customer_code=wt_customerCode, currency_code=currency, source=2)
         # # WT 清关
         #data = request_customer_fee_withoutbag(lading_index = str(lading_index+i),servercode=servercode,qg_servercode=qg_servercode, customerCode=wt_customerCode, Charge_Weight=Charge_Weight,if_pqm=1, source = 2)
         #wt_bushou_data(dzbm="KYDZ0003", shipper_code=data, bsn_type="Q", server_code=servercode,customer_code=wt_customerCode, currency_code=currency, source=2)

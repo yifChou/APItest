@@ -407,7 +407,7 @@ def sql_to_airbill_fee(billid,lading_list):
 def sql_to_airbill_fentan_bag(lading_sum,lading_index,bag_list,shipper_list,customerCode,Charge_Weight,servercode,currency,source):
     lading_list=[]
     for i in range(lading_sum):
-        lading_number = request_airlading_withbag_fee(lading_number=str(lading_index+i), bag_list=bag_list, shipper_list=shipper_list, customerCode=customerCode, servercode=servercode, Charge_Weight=Charge_Weight,currency=currency,fee_number=3, source=source)
+        lading_number = request_airlading_withbag_fee(lading_number=str(lading_index+i), bag_list=bag_list, shipper_list=shipper_list, customerCode=customerCode, servercode=servercode, Charge_Weight=Charge_Weight,currency=currency,fee_number=3,if_pqm=0, source=source)
         lading_list.append(lading_number)
     billid = sql_to_airbill(servercod=servercode)
     sql_to_airbill_ladingdetails(billid=billid,currency=currency, lading_list=lading_list)
